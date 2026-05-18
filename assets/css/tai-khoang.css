@@ -1,0 +1,188 @@
+#sigup 
+{
+    width: 38%;
+    margin-bottom: 100px;
+}
+
+#login 
+{
+    width: 33%;
+    margin-bottom: 100px;
+}
+
+
+#prev-home
+{
+    padding: 40px 0px;
+}
+
+#Logo-Zyro
+{
+    font-size: 40px;
+}
+
+#logo2-zyro
+{
+    width: 30px;
+    margin-top: -10px;
+}
+
+#head-form
+{
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.sub-form
+{
+    text-shadow: 0px 0px 0px black;
+    font-size: 19px;
+    margin-bottom: 20px;
+}
+
+.box-input
+{
+    height: 70px;
+}
+
+/* Thông tin tài khoảng */
+.text-box-tk
+{   
+    width: 100%;
+    padding: 10px 10px;
+    border-radius: 8px;
+    border: 1px solid black;
+}
+
+.lb-input
+{
+    position: relative;
+    padding: 3px 5px;
+    top: -40px;
+    left: 8px;
+    border-radius: 15px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+input::placeholder
+{
+    color: black;
+    font-size: 20px;
+}
+
+/* action */
+input:focus + .lb-input
+{
+    top: -58px;
+    font-size: 17px;
+    z-index: 1;
+    background-color: #FFFFFF;
+}
+
+input:focus::placeholder
+{
+    color: #FFFFFF;
+}
+
+/* Thông tin cá nhân */
+nav
+{
+    display: flex;
+    gap: 5px;
+}
+.box-input-cn
+{
+    width: 47.5%;
+    height: 70px;
+}
+
+.text-box-cn
+{   
+    width: 100%;
+    padding: 10px 10px;
+    border-radius: 8px;
+    border: 1px solid black;
+}
+
+#box-se-gt
+{
+    width: 30% !important;
+}
+
+#box-in-sdt
+{
+    width: 65% !important;
+}
+
+#txtGioiTinh
+{   
+    width: 100%;
+    padding: 8.3px 10px;
+    border-radius: 8px;
+    border: 1px solid black;
+    font-size: 20px;
+}
+
+/* action */
+
+input:not(:placeholder-shown)
+{
+    background-color: #F6F6F6;
+}
+
+
+select:focus + .lb-input
+{
+    z-index: 1;
+    top: -58px;
+    font-size: 17px;
+    background-color: #FFFFFF;
+}
+
+select:focus option[value="gt"]
+{
+    display: none;
+}
+
+
+.box-input-ngay-thang
+{
+    width: 27%;
+    height: 70px;
+}
+
+.box-input-nam
+{
+    width: 39%;
+    height: 70px;
+}
+
+/* Đổi màu checkbox khi được chọn */
+.box-input input[type="checkbox"]
+{
+    accent-color: #000000;
+    width: 20px;
+    height: 20px;
+} 
+
+
+.box-input input[type="checkbox"]:checked:hover
+{
+    background-color: #906969;
+}
+
+
+#box-sb-dang-ky
+{
+    text-align: right;
+    font-size: 20px;
+}
+
+.text-checkbox
+{
+    position: relative;
+    top: -2.8px;
+}

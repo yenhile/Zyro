@@ -1,0 +1,27 @@
+a
+{
+    text-decoration: none;
+}
+
+
+#sidebar
+{
+    background-color: #343a40;
+}
+
+.sidebar-brand
+{
+    width: 100%;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+    padding: 9.7px 0px;
+}
+
+/* Logo - Zyro */
+#Logo-Zyro
+{
+    font-weight: bolder;
+    font-size: 30px;
+    color: #FFFFFF;
+}

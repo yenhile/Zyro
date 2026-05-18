@@ -1,0 +1,87 @@
+/*-Content sản phẩm */
+.container
+{
+    width: 100%;
+    display: flex;
+    height: auto;
+}
+
+/*--Filters */
+.filters
+{
+    width: 25%;
+    height: 200px;
+    padding: 0px 10px;
+    font-size: 18px;
+}
+
+.titile-filters
+{
+    text-align: center;
+    font-weight: bolder;
+    font-size: 25px;
+}
+
+.loai-san-pham
+{
+    text-shadow: 0px 0px 0px black;
+    padding: 30px 0px;
+}
+
+.box-filters
+{
+    width: 100%;
+    height: auto;
+    border-top: 1px solid #cccccc;
+    padding: 10px 0px;
+}
+
+.btn-drop-filters
+{
+    width: 100%;
+    text-align: left;
+    border: none;
+    background-color: #FFFFFF;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.drop-filters
+{
+    display: none;
+    padding: 20px 0px;
+}
+
+.drop-filters.show {
+    display: block;
+}
+
+
+/*--Danh sách sản phẩm */
+.box-danh-sach-sp
+{
+    width: 85%;
+    height: auto;
+}
+
+/* Box chứa 3 sản phẩm */
+.box-danh-sach-3-sp
+{
+    width: 100%;
+    height: auto;
+}
+
+/*---Box sản phẩm */
+.sanpham-box
+{
+    width: 33%;
+    height: auto;
+    float: left;
+    padding: 30px 10px;
+}
+
+.sanpham-box img 
+{
+    width: 100%;
+}
+

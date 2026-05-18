@@ -1,0 +1,631 @@
+a 
+{
+    color: black;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: black;
+}
+
+/* Quicksand */
+@font-face 
+{
+    font-family: "Quicksand";
+    src: url("../font-chu/Quiksand/Quicksand-VariableFont_wght.ttf") format("truetype");
+}
+/* Montserrat */
+@font-face 
+{
+    font-family: "Montserrat";
+    src: url("../font-chu/Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
+}
+
+body
+{
+    font-family: 'Quicksand', sans-serif;
+    background-color: #FFFFFF;
+}   
+
+/* Menu top */
+
+#left-menu-top img
+{
+    margin-left: 30px;
+    width: 13px;
+}
+
+#right-menu-top 
+{
+    font-size: 13.5px;
+	text-shadow: 0px 0px 0px black;
+}
+
+#right-menu-top li
+{
+    list-style: none;
+    padding: 0px 10px;
+    float: right;
+}
+
+#drop-tk
+{
+    border: none;
+    text-shadow: 0px 0px 0px black;
+}
+
+/* Drop tài khoảng (CHUNG)*/
+
+.dropdown:hover #drop-tai-khoang
+{
+    display: block;
+    width: 173px;
+    padding: 20px;
+    margin-left: -46px;
+    text-align: left;
+    border-bottom: 1px solid rgb(176, 176, 176);
+    background-color: #F6F6F6;
+}
+
+#drop-tk
+{
+    background-color: #F6F6F6;
+    border-bottom-color: #F6F6F6;
+}
+
+#drop-tk:hover
+{
+    border-bottom-color: black;
+}
+
+#drop-tai-khoang li
+{
+    width: 100%;
+}
+
+.dp-tk
+{
+    width: 100%;
+    padding: 0px 14px;
+    margin-top: 15px;
+}
+
+/* Menu main */
+.container-fluid
+{
+    display: flex;
+}
+
+#menu-main-left
+{
+    width: 20%;
+    padding: 0px 30px;
+}
+
+#menu-main-center
+{
+    width: 60%;
+}
+
+#menu-main-right
+{
+    width: 20%;
+    display: flex;
+}
+
+/* Logo - Zyro */
+#Logo-Zyro
+{
+    font-weight: bolder;
+    font-size: 30px;
+}
+
+/* Drop-menu (CHUNG)*/
+
+.dropdown:hover .menu-drop
+{
+    display: block;
+    border: none;
+    background-color: #FFFFFF;
+    width: 1537px;
+    text-align: center;
+    border-bottom: 1px solid rgb(176, 176, 176);
+}
+
+.drop
+{
+    height: auto;
+    text-align: left;
+    font-size: 14px;
+    padding: 35px 0px 30px 0px;
+    line-height: 25px;
+}
+
+.drop a
+{
+    color: rgb(85, 85, 85);
+
+}
+
+/* btn menu 1 */
+.dropdown:hover #menu-drop-1
+{
+    margin-left: -587px;
+}
+
+#drop-menu1
+{
+    width: 60%;
+    display: flex;
+}
+
+#dp-1
+{
+    width: 25%;
+}
+
+/* btn menu 2 */
+.dropdown:hover #menu-drop-2
+{
+    margin-left: -710.8px;
+}
+
+#drop-menu2
+{
+    width: 50.4%;
+    display: flex;
+}
+
+#dp-2
+{
+    width: 33%;
+}
+
+/* btn menu 3 */
+.dropdown:hover #menu-drop-3
+{
+    margin-left: -766.9px;
+}
+
+#drop-menu3
+{
+    width: 50.5%;
+    display: flex;
+}
+
+#dp-3
+{
+    width: 33%;
+}
+
+/* btn menu 4 */
+.dropdown:hover #menu-drop-4
+{
+    margin-left: -808px;
+}
+
+#drop-menu4
+{
+    width: 50.5%;
+    display: flex;
+}
+
+#dp-4
+{
+    width: 33%;
+}
+
+/* btn menu 5 */
+.dropdown:hover #menu-drop-5
+{
+    margin-left: -882px;
+}
+
+#drop-menu5
+{
+    width: 80%;
+    display: flex;
+}
+
+#dp-5
+{
+    width: 20%;
+}
+
+/* Hover chữ menu */
+.drop .h-drop:hover
+{
+    color: rgb(166, 166, 166) !important;
+    text-shadow: 0px 0px 0px rgb(137, 137, 137) !important;
+}
+
+.drop a:hover
+{
+    color: black;
+    text-shadow: 0px 0px 0px black;
+}
+
+.btn-menu:hover
+{
+    border-bottom: 2px solid black;
+}
+
+/* style chữ menu (CHUNG)*/
+
+.h-drop
+{
+    font-weight: bold;
+    color: black !important;
+}
+
+.btn-menu
+{
+    border: none;
+    background-color: #FFFFFF;
+    padding: 8px 0px;
+    margin-left: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #FFFFFF;
+}
+
+/* Tìm kiếm */
+#box-search-menu-main
+{
+    width: 70%;
+}
+.box-icon-menu-main
+{
+    width: 15%;
+}
+
+#icon-bag
+{
+    width: 28px;
+}
+
+#icon-like
+{
+    width: 28px;
+}
+
+#btn-search
+{
+    position: absolute;
+    width: 34px;
+    border: none;
+    background-color: #F6F6F6;
+    margin-left: 0.2px;
+    margin-top: -0.3px;
+    border-radius: 20px;
+}
+
+#txt-search
+{
+    width: 90%;
+    text-align: center;
+    border-radius: 20px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #F6F6F6;
+}
+
+#icon-search
+{
+    width: 90%;
+    padding: 2px 0px;
+}
+
+#txt-search:focus
+{
+    outline: none;
+}
+
+#txt-search:hover
+{
+    background-color: #d8d8d8;
+}
+
+#btn-search:hover
+{
+    background-color: #d8d8d8;
+}
+
+/* Nút Mobile */
+#Nut-mobile
+{
+    position: relative;
+	left: -10px;
+}
+
+/* Banner
+#banner-khung
+{
+    width: 100%;
+    text-align: center;
+    background-color: #F6F6F6;
+}
+
+.slide
+{
+    width: 55%;
+    height: auto;
+}
+
+.banner
+{
+    width: 70%;
+    display: flex;
+    padding: 13px 0px;
+    font-size: 14px;
+}
+
+.text-banner
+{
+    font-size: 19px !important;
+    font-weight: bold;
+}
+
+.box-banner1
+{
+    width: 70%;
+}
+
+.box-banner2
+{
+    width: 30%;
+    padding: 20px 0px;
+}
+
+.carousel-control
+{
+    border-radius: 20px;
+    background-color: black;
+}
+*/
+.icon-next-prev
+{
+    width: 20px;
+} 
+
+#icon-np-banner
+{
+    width: 20px;
+}
+
+.carousel
+{
+    width: 100%;
+    height: auto;
+}
+
+.banner-text
+{
+    color: #FFFFFF;
+    font-weight: bolder;
+    font-size: 20px;
+}
+
+.carousel-control-prev, .carousel-control-next
+{
+    width: 15%;
+}
+
+/* content */
+/* img */
+#img-nike1-home
+{
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+#Content-1
+{
+    margin-bottom: 100px;
+    text-align: center;
+    font-size: 20px;
+}
+
+#img-air-max-dn8
+{
+    width: 50%;
+}
+
+#Content-1 span
+{
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* Shop by Icons */
+.container-reveiw-san-pham 
+{
+    position: relative;
+    width: 100%;
+    margin: auto;
+    overflow: hidden;
+    margin-top: 100px;
+}
+
+.box-reveiw 
+{
+    margin-top: 30px;
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    gap: 13px;
+    overflow-x: auto; /* Cho phép cuộn ngang */
+    scroll-behavior: smooth; /* Cuộn mượt */
+}
+
+.sp-reveiw 
+{
+    flex: 0 0 calc(95% / 3); /* Hiển thị 3 sản phẩm cùng lúc */
+    text-align: center;
+    margin-bottom: 30px;
+    transition: all 0.2s ease-in-out;
+    padding: 8px;
+}
+
+.sp-reveiw:hover
+{
+    padding: 0px;
+}
+
+.sp-reveiw img 
+{
+    width: 100%;
+    height: auto;
+    
+}
+
+.prev-reveiw, .next-reveiw 
+{
+    position: absolute;
+	width: auto;
+    background-color: #F6F6F6;
+    border: none;
+    border-radius: 24.5px;
+    padding: 13.5px 15px;
+}
+
+.prev-reveiw 
+{ 
+	right: 70px; 
+	top: 0px;
+}
+.next-reveiw 
+{ 
+	right: 0px; 
+	top: 0px;
+}
+
+.box-reveiw::-webkit-scrollbar {
+    background-color: #FFFFFF;
+    height: 8px;
+}
+
+.box-reveiw::-webkit-scrollbar-thumb {
+    background-color: #d8d8d8; /* Màu thanh cuộn */
+    border-radius: 4px;
+}
+
+.box-reveiw::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Màu khi hover vào thanh cuộn */
+}
+
+
+
+/* Footer */
+.box-footer
+{
+    line-height: 35px;
+}
+
+.logo-ket-noi
+{
+	padding: 8px 0px;
+}
+
+
+
+/* -------------------------------------------------------------------- */
+/* Nút xem thêm về sản phẩm */
+#Nut-xem-chi-tiet
+{
+    background-color: black;
+    color: #FFFFFF;
+    padding: 13px 18px;
+    border-radius: 50px;
+    border: none;
+    font-weight: bolder;
+}
+
+/* Sản phẩm trending */
+
+.trend-sp-thong-tin
+{
+    width: 100%;
+    font-size: 20px;
+    text-align: left;
+    padding: 15px 0px;
+}
+
+.trend-sp-name, .sp-name
+{
+    font-weight: bold;
+}
+
+.trend-sp-mo-ta-ngan, .sp-mo-ta-ngan
+{
+    color: #6e6e6e;
+}
+
+.sp-gia > span
+{
+    font-weight: bolder;
+}
+
+/* Loại thể thao */
+.cta-loai-the-thao
+{
+    background-color: #FFFFFF;
+    width: 120px;
+    padding: 4px 10px;
+    border-radius: 30px;
+    margin-top: -90px;
+    margin-left: 50px;
+    margin-bottom: 100px;
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    text-shadow: 0px 0px 0px black;
+}
+
+.cta-loai-the-thao:hover
+{
+    background-color: #d8d8d8;
+}
+
+/* Icon like sản phẩm */
+.like-sp {
+    float: right;
+    padding: 0px 20px;
+}
+
+.like-sp-icon {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    transform: rotate(45deg);
+    background-color: #cfcfcf;
+    transition: background-color 0s ease;
+}
+
+.like-sp-icon::before
+{
+    content: "";
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    position: absolute;
+    background-color: #cfcfcf;
+    top: -8px;
+    left: 0.1px;
+}
+.like-sp-icon::after {
+    content: "";
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #cfcfcf;
+    position: absolute;
+    top: 0.1px;
+    left: -8px;
+}
+
+
+.liked,
+.liked::before,
+.liked::after {
+    background-color: red;
+}

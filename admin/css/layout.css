@@ -1,0 +1,28 @@
+body
+{
+    margin: 0px auto;
+}
+
+.app-wrapper
+{
+    display: flex;
+    width: 100%;
+}
+
+#sidebar
+{
+    width: 15%;
+    transition: 0.4s ease-in-out;
+    box-shadow: 4px 0px 10px #bbc7d3;
+    z-index: 1;
+}
+
+#sidebar.collapsed {
+    width: 0%;
+    z-index: -1;
+}
+
+#container
+{
+    width: 100%;
+}
