@@ -59,10 +59,11 @@ $reference = isset($data['reference']) ? trim($data['reference']) : ('PAYOS_' . 
 $description = isset($data['description']) ? trim($data['description']) : '';
 
 if ($orderCode <= 0 || $amount <= 0) {
-    http_response_code(400);
+    // Chữ ký hợp lệ, đây là test ping kiểm tra URL từ PayOS Dashboard
+    http_response_code(200);
     echo json_encode(array(
-        'success' => false,
-        'message' => 'Missing orderCode or amount in webhook data.'
+        'success' => true,
+        'message' => 'PayOS webhook ping test received successfully.'
     ));
     exit();
 }
@@ -80,10 +81,12 @@ if ($result['success']) {
         'total_price' => $result['total_price']
     ));
 } else {
-    http_response_code(422);
+    // Khi chữ ký số hợp lệ nhưng không tìm thấy đơn hàng trong CSDL (ví dụ đơn hàng thử nghiệm từ PayOS),
+    // bắt buộc trả về HTTP 200 OK theo chuẩn của PayOS để xác thực URL webhook thành công trên Dashboard.
+    http_response_code(200);
     echo json_encode(array(
-        'success' => false,
-        'message' => $result['message']
+        'success' => true,
+        'message' => 'Webhook received. ' . $result['message']
     ));
 }
 exit();
