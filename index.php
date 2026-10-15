@@ -1,295 +1,170 @@
+<?php
+require_once("class/classProduct.php");
+
+$productModel = new san_pham();
+
+// Lấy danh sách sản phẩm theo thương hiệu
+$nikeProducts = $productModel->lay_san_pham_trending(1);      // Nike (brand_id = 1)
+$converseProducts = $productModel->lay_san_pham_trending(2);  // Converse (brand_id = 2)
+$categories = $productModel->lay_danh_sach_loai_giay();       // Danh mục môn thể thao / loại giày
+?>
 <!doctype html>
-<html>
+<html lang="vi">
 <head>
-<meta charset="utf-8">
-<title>Trang Chủ</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <script src="../assets/js/action.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZYRO — Giày Thể Thao Chính Hãng (Nike, Converse, Jordan)</title>
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="/Zyro/assets/css/bootstrap.css">
+    <!-- Style tùy chỉnh -->
+    <link rel="stylesheet" href="/Zyro/assets/css/layout.css">
+    <link rel="stylesheet" href="/Zyro/assets/css/style.css">
+    <script src="/Zyro/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/Zyro/assets/js/action.js"></script>
 </head>
 <body>
-<!-- Header -->
+<!-- Header dùng chung -->
     <?php include ('includes/header.php'); ?>
 
-<!-- Banner
-    <div id="banner-khung">
-        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="banner">
-                        <div class="box-banner1 text-banner">
-                            KIỂU DÁNG MỚI ĐANG ĐƯỢC BÁN: GIẢM GIÁ TỚI 40%
-                        </div>    
-                        <div class="box-banner2">
-                            <a href="#"><u>Hãy nhanh tay nào!</u></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="carousel-item">
-                    <div class="banner">
-                        <div class="box-banner1 text-banner">
-                            MIỄN PHÍ & TRẢ HÀNG MIỄN PHÍ TRONG VÒNG 30 NGÀY
-                        </div>
-                        <div class="box-banner2">
-                            <a href="#"><u>Xem chi tiết</u></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="carousel-item">
-                    <div class="banner">
-                        <div class="box-banner1 text-banner">
-                            DI CHUYỂN, MUA SẮM, TÙY CHỈNH VÀ ĂN MỪNG CÙNG RYZO
-                        </div>
-                        <div class="box-banner2">
-                            <a href="#"><u>Tham gia ngay</u></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button class="carousel-control-prev btn-prev-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                <img src="../icon/icon-prev.png" class="icon-next-prev" alt="">
-            </button>
-            <button class="carousel-control-next btn-prev-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                <img src="../icon/icon-next.png" class="icon-next-prev" alt="">
-            </button>
-        </div>
-    </div> -->
-<!-- Slide giới thiệu -->
-<div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+<!-- Slide Banner Giới Thiệu -->
+    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
             <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
             <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
         <div class="carousel-inner">
-            <div class="carousel-item active" data-bs-interval="10000">
-                <a href="#">
-                    <img src="assets/img/banner-nike-air-max-dn8.png" class="d-block w-100" id="banner-nike" alt="...">
+            <div class="carousel-item active" data-bs-interval="6000">
+                <a href="/Zyro/pages/SanPham.php?brand=1">
+                    <img src="/Zyro/assets/img/banner-nike-air-max-dn8.png" class="d-block w-100" id="banner-nike" alt="Nike Air Max Dn8">
                 </a>
             </div>
-            <div class="carousel-item" data-bs-interval="2000">
-                <a href="#"><img src="assets/img/banner-converse-seasonal_color_eng_main_desktop.webp" class="d-block w-100" alt="..."></a>
+            <div class="carousel-item" data-bs-interval="4000">
+                <a href="/Zyro/pages/SanPham.php?brand=2">
+                    <img src="/Zyro/assets/img/banner-converse-seasonal_color_eng_main_desktop.webp" class="d-block w-100" alt="Converse Seasonal">
+                </a>
             </div>
-            <div class="carousel-item">
-                <a href="#"><img src="assets/img/banner-converse-love_chuck_eng_main_desktop.webp" class="d-block w-100" alt="..."></a>
+            <div class="carousel-item" data-bs-interval="4000">
+                <a href="/Zyro/pages/SanPham.php?brand=2">
+                    <img src="/Zyro/assets/img/banner-converse-love_chuck_eng_main_desktop.webp" class="d-block w-100" alt="Converse Love Chuck">
+                </a>
             </div>
         </div>
         <button class="carousel-control-prev" id="banner-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-            <img src="assets/icon/icon-prev.png" class="icon-next-prev" alt="">
+            <img src="/Zyro/assets/icon/icon-prev.png" class="icon-next-prev" alt="Prev">
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-            <img src="assets/icon/icon-next.png" class="icon-next-prev" alt="">
+        <button class="carousel-control-next" id="banner-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <img src="/Zyro/assets/icon/icon-next.png" class="icon-next-prev" alt="Next">
         </button>
     </div>
 
-<!-- content -->
+<!-- Content Chính -->
     <div class="container">
-    <!-- 
-        <section id="Content-1">
-            <img src="../img/Nike1.jpg" id="img-nike1-home" alt="">
-            <span>Mới nhất</span>
-            <p><img src="../img/AIR-MAX-DN8.png" id="img-air-max-dn8" alt=""></p>
-            <p>Giới thiệu chương tiếp theo của Dynamic Air. Cảm nhận.</p><br>
-            <p><a href="#" id="Nut-xem-chi-tiet">Xem ngay</a></p>
-        </section> -->
 
-<!-- Reveiw sản phẩm -->
+<!-- 1. Mua sắm theo biểu tượng: Nike -->
         <div class="container-reveiw-san-pham">
             <h3>Mua sắm theo biểu tượng: Nike</h3>
-            <button class="prev-reveiw"><img class="icon-next-prev" src="../icon/icon-prev.png" alt=""></button>
-            <button class="next-reveiw"><img class="icon-next-prev" src="../icon/icon-next.png" alt=""></button>
+            <button class="prev-reveiw" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-prev.png" alt="Prev"></button>
+            <button class="next-reveiw" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-next.png" alt="Next"></button>
             <div class="box-reveiw">
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-VOMERO.png" alt="Vomero 5"></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-PEGASUS41.png" alt="PEGASUS 41"></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-BLAZER.png" alt="BLAZER"></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-DUNKS.png" alt="DUNKS"></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-METCON.png" alt="METCON"></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-V2K.png" alt="V2K"></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/review-sp-nike-AIR-JORDAN1.png" alt="AIR JORDAN 1"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=1"><img src="/Zyro/assets/img/review-sp-nike-VOMERO.png" alt="Vomero 5"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=1"><img src="/Zyro/assets/img/review-sp-nike-PEGASUS41.png" alt="Pegasus 41"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=1"><img src="/Zyro/assets/img/review-sp-nike-BLAZER.png" alt="Blazer"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=1"><img src="/Zyro/assets/img/review-sp-nike-DUNKS.png" alt="Dunks"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=1"><img src="/Zyro/assets/img/review-sp-nike-METCON.png" alt="Metcon"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=1"><img src="/Zyro/assets/img/review-sp-nike-V2K.png" alt="V2K"></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?brand=3"><img src="/Zyro/assets/img/review-sp-nike-AIR-JORDAN1.png" alt="Air Jordan 1"></a></div>
             </div>
         </div>
 
-<!-- Sản phẩm trending Nike -->
+<!-- 2. Sản phẩm trending Nike (Dynamic từ CSDL zyro_db) -->
         <div class="container-reveiw-san-pham">
             <h3>Xu hướng hiện nay: Nike</h3>
-            <button class="prev-reveiw" id="trend-prev-nike"><img class="icon-next-prev" src="../icon/icon-prev.png" alt=""></button>
-            <button class="next-reveiw" id="trend-next-nike"><img class="icon-next-prev" src="../icon/icon-next.png" alt=""></button>
+            <button class="prev-reveiw" id="trend-prev-nike" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-prev.png" alt="Prev"></button>
+            <button class="next-reveiw" id="trend-next-nike" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-next.png" alt="Next"></button>
             <div class="box-reveiw" id="box-trend-nike">
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-NIKE+WAFFLE+NAV.png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Waffle Nav</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nam</div>
-                            <div class="trend-sp-gia"><span>2,349,000</span>₫</div>
+                <?php if (!empty($nikeProducts)): ?>
+                    <?php foreach ($nikeProducts as $row): 
+                        $pid = (int)$row['product_id'];
+                        $pname = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
+                        $pdesc = htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8');
+                        $pcat = htmlspecialchars($row['category_name'] ? $row['category_name'] : 'Giày thể thao nam/nữ', ENT_QUOTES, 'UTF-8');
+                        $pprice = number_format($row['price'], 0, ',', '.');
+                        $pimg = htmlspecialchars($row['image_url'], ENT_QUOTES, 'UTF-8');
+                    ?>
+                        <div class="sp-reveiw">
+                            <a href="/Zyro/pages/ChiTietSanPham.php?id=<?php echo $pid; ?>">
+                                <div class="product-img-wrap">
+                                    <img src="/Zyro/assets/img/<?php echo $pimg; ?>" alt="<?php echo $pname; ?>">
+                                </div>
+                                <div class="trend-sp-thong-tin">
+                                    <div class="trend-sp-name"><?php echo $pname; ?></div>
+                                    <div class="trend-sp-mo-ta-ngan"><?php echo $pcat; ?></div>
+                                    <div class="trend-sp-gia"><span><?php echo $pprice; ?></span>₫</div>
+                                </div>
+                            </a>
                         </div>
-                    </a>
-                    <div class="like-sp">
-                        <div id="like-sp-icon" class="like-sp-icon"></div>
-                    </div>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-BLAZER+MID+'77+VNTG.png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Blazer Mid '77 Vintage</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nam</div>
-                            <div class="trend-sp-gia"><span>2,929,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-W+NIKE+CORTEZ.png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Cortez</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nữ</div>
-                            <div class="trend-sp-gia"><span>2,779,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-WMNS+AIR+JORDAN+1+MID.png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Air Jordan 1 Mid</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nữ</div>
-                            <div class="trend-sp-gia"><span>3,669,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-NIKE+PEGASUS+PREMIUM.png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Pegasus Premium</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày chạy bộ nam</div>
-                            <div class="trend-sp-gia"><span>6,179,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-NIKE+AIR+MORE+UPTEMPO+(GS).png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Air More Uptempo</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày trẻ em lớn tuổi</div>
-                            <div class="trend-sp-gia"><span>3,569,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trending-kid-NIKE+DYNAMO+2+EASYON+LIL+(TD).png">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Dynamo 2 EasyOn</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày bé/trẻ mới biết đi</div>
-                            <div class="trend-sp-gia"><span>1,529,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted p-3">Đang cập nhật sản phẩm xu hướng Nike...</p>
+                <?php endif; ?>
             </div>
         </div>
 
-<!-- Loại sản phẩm -->
+<!-- 3. Mua sắm theo môn thể thao / Loại giày -->
         <div class="container-reveiw-san-pham">
             <h3>Mua sắm theo môn thể thao</h3>
-            <button class="prev-reveiw"><img id="loai-the-thao-prev" class="icon-next-prev" src="../icon/icon-prev.png" alt=""></button>
-            <button class="next-reveiw"><img id="loai-the-thao-next" class="icon-next-prev" src="../icon/icon-next.png" alt=""></button>
+            <button class="prev-reveiw" id="loai-the-thao-prev" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-prev.png" alt="Prev"></button>
+            <button class="next-reveiw" id="loai-the-thao-next" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-next.png" alt="Next"></button>
             <div class="box-reveiw" id="box-loai-the-thao">
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-chay-bo.jpg"> <div class="cta-loai-the-thao">Chạy bộ</div></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-da-bong.jpg"> <div class="cta-loai-the-thao">Đá bóng</div></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-bong-ro.jpg"> <div class="cta-loai-the-thao">Bóng rổ</div></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-yoga.jpg"> <div class="cta-loai-the-thao">Yoga</div></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-gym.jpg"> <div class="cta-loai-the-thao">Gym</div></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-truot-van.jpg"> <div class="cta-loai-the-thao">Trượt ván</div></a></div>
-                <div class="sp-reveiw"><a href="#"><img src="../img/nike-loaiTT-dance.jpg"> <div class="cta-loai-the-thao">Dance</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=1"><img src="/Zyro/assets/img/nike-loaiTT-chay-bo.jpg" alt="Chạy bộ"> <div class="cta-loai-the-thao">Chạy bộ</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=2"><img src="/Zyro/assets/img/nike-loaiTT-da-bong.jpg" alt="Đá banh"> <div class="cta-loai-the-thao">Đá banh</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=3"><img src="/Zyro/assets/img/nike-loaiTT-bong-ro.jpg" alt="Bóng rổ"> <div class="cta-loai-the-thao">Bóng rổ</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=5"><img src="/Zyro/assets/img/nike-just-tenis.jpg" alt="Tennis"> <div class="cta-loai-the-thao">Tennis</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=4"><img src="/Zyro/assets/img/nike-loaiTT-gym.jpg" alt="Gym & Thể hình"> <div class="cta-loai-the-thao">Gym</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=4"><img src="/Zyro/assets/img/nike-loaiTT-truot-van.jpg" alt="Trượt ván"> <div class="cta-loai-the-thao">Trượt ván</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=4"><img src="/Zyro/assets/img/nike-loaiTT-yoga.jpg" alt="Yoga"> <div class="cta-loai-the-thao">Yoga</div></a></div>
+                <div class="sp-reveiw"><a href="/Zyro/pages/SanPham.php?category=4"><img src="/Zyro/assets/img/nike-loaiTT-dance.jpg" alt="Dance"> <div class="cta-loai-the-thao">Dance</div></a></div>
             </div>
         </div>
 
-<!-- Sản phẩm trending converse -->
+<!-- 4. Sản phẩm trending Converse (Dynamic từ CSDL zyro_db) -->
         <div class="container-reveiw-san-pham">
             <h3>Xu hướng hiện nay: Converse</h3>
-            <button class="prev-reveiw" id="trend-prev-converse"><img class="icon-next-prev" src="../icon/icon-prev.png" alt=""></button>
-            <button class="next-reveiw" id="trend-next-converse"><img class="icon-next-prev" src="../icon/icon-next.png" alt=""></button>
+            <button class="prev-reveiw" id="trend-prev-converse" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-prev.png" alt="Prev"></button>
+            <button class="next-reveiw" id="trend-next-converse" type="button"><img class="icon-next-prev" src="/Zyro/assets/icon/icon-next.png" alt="Next"></button>
             <div class="box-reveiw" id="box-trend-converse">
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-chuk.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Chuck 70</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nam</div>
-                            <div class="trend-sp-gia"><span>2,000,000</span>₫</div>
+                <?php if (!empty($converseProducts)): ?>
+                    <?php foreach ($converseProducts as $row): 
+                        $pid = (int)$row['product_id'];
+                        $pname = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
+                        $pdesc = htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8');
+                        $pcat = htmlspecialchars($row['category_name'] ? $row['category_name'] : 'Giày Converse cổ điển', ENT_QUOTES, 'UTF-8');
+                        $pprice = number_format($row['price'], 0, ',', '.');
+                        $pimg = htmlspecialchars($row['image_url'], ENT_QUOTES, 'UTF-8');
+                    ?>
+                        <div class="sp-reveiw">
+                            <a href="/Zyro/pages/ChiTietSanPham.php?id=<?php echo $pid; ?>">
+                                <div class="product-img-wrap">
+                                    <img src="/Zyro/assets/img/<?php echo $pimg; ?>" alt="<?php echo $pname; ?>">
+                                </div>
+                                <div class="trend-sp-thong-tin">
+                                    <div class="trend-sp-name"><?php echo $pname; ?></div>
+                                    <div class="trend-sp-mo-ta-ngan"><?php echo $pcat; ?></div>
+                                    <div class="trend-sp-gia"><span><?php echo $pprice; ?></span>₫</div>
+                                </div>
+                            </a>
                         </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-chuck-taylor-all-star.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Nike Blazer Mid '77 Vintage</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nữ</div>
-                            <div class="trend-sp-gia"><span>1,240,000</span>₫ - <span>1,550,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-cruice.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Converse Cruise</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nữ</div>
-                            <div class="trend-sp-gia"><span>1,880,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-chuck-70-2.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Chuck 70</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày nam</div>
-                            <div class="trend-sp-gia"><span>1,600,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-star-player-76-premium.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Star Player 76 Premium Canvas</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày chạy bộ nam</div>
-                            <div class="trend-sp-gia"><span>6,179,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-commer-des.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Converse x Comme des Garçons Kids Chuck 70</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày trẻ em lớn tuổi</div>
-                            <div class="trend-sp-gia"><span>2,200,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
-                <div class="sp-reveiw">
-                    <a href="#">
-                        <img src="../img/trend-converse-commer-des2.webp">
-                        <div class="trend-sp-thong-tin">
-                            <div class="trend-sp-name">Converse x Comme des Garçons Kids Chuck 70</div>
-                            <div class="trend-sp-mo-ta-ngan">Giày trẻ em lớn tuổi</div>
-                            <div class="trend-sp-gia"><span>2,200,000</span>₫</div>
-                        </div>
-                    </a>
-                </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted p-3">Đang cập nhật sản phẩm xu hướng Converse...</p>
+                <?php endif; ?>
             </div>
         </div>
+
     </div>
 
-<!-- Footer -->
+<!-- Footer dùng chung -->
     <?php include ('includes/footer.php'); ?>
 </body>
 </html>

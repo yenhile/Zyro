@@ -1,0 +1,200 @@
+/* ==================================================================== */
+/* ZYRO ADMIN STYLESHEET                                                */
+/* ==================================================================== */
+
+.admin-content-box {
+    padding: 28px;
+    background-color: #F8F9FA;
+    min-height: calc(100vh - 70px);
+}
+
+.admin-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.admin-page-heading {
+    font-size: 24px;
+    font-weight: 800;
+    color: #212529;
+    margin: 0;
+}
+
+.admin-page-desc {
+    color: #6C757D;
+    font-size: 13px;
+    margin: 4px 0 0 0;
+}
+
+.btn-admin-primary {
+    background-color: #111111;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-admin-primary:hover {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+.admin-card {
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    border: 1px solid #E9ECEF;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.admin-card-body {
+    padding: 24px;
+}
+
+/* Table styles */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #F8F9FA;
+    color: #495057;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-bottom: 2px solid #E9ECEF;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.admin-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #F1F3F5;
+    vertical-align: middle;
+    color: #333333;
+}
+
+.admin-table tr:hover {
+    background-color: #F8F9FA;
+}
+
+.admin-thumb-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 8px;
+    background-color: #F6F6F6;
+    border: 1px solid #E0E0E0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+}
+
+.badge-brand-admin {
+    background: #E9ECEF;
+    color: #212529;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-category-admin {
+    background: #E7F5FF;
+    color: #1971C2;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-del-sm {
+    background: #FFF5F5;
+    color: #E03131;
+    border: 1px solid #FFC9C9;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-del-sm:hover {
+    background: #E03131;
+    color: #FFFFFF;
+}
+
+.btn-view-sm {
+    background: #F8F9FA;
+    color: #495057;
+    border: 1px solid #CED4DA;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 6px;
+    transition: all 0.2s;
+}
+
+.btn-view-sm:hover {
+    background: #E9ECEF;
+    color: #212529;
+}
+
+/* Form inputs */
+.form-group-admin {
+    margin-bottom: 20px;
+}
+
+.form-group-admin label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #343A40;
+    margin-bottom: 8px;
+}
+
+.input-admin, 
+.select-admin, 
+.textarea-admin {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #CED4DA;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #212529;
+    background-color: #FFFFFF;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-admin:focus, 
+.select-admin:focus, 
+.textarea-admin:focus {
+    border-color: #111111;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}

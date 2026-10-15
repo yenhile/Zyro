@@ -1,0 +1,24 @@
+{
+  "name": "zyro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NHI1973/FOOTWEAR-E-COMMERCE-SYSTEM.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NHI1973/FOOTWEAR-E-COMMERCE-SYSTEM/issues"
+  },
+  "homepage": "https://github.com/NHI1973/FOOTWEAR-E-COMMERCE-SYSTEM#readme",
+  "devDependencies": {
+    "@optave/codegraph": "^3.17.0"
+  }
+}

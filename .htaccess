@@ -1,0 +1,30 @@
+# ==============================================================================
+# CẤU HÌNH TƯƠNG THÍCH MÔI TRƯỜNG HOSTING (APACHE .HTACCESS) - DỰ ÁN ZYRO STORE
+# ==============================================================================
+
+# 1. Bật Engine Rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Tương thích 2 chiều: Nếu deploy tại Document Root của Domain nhưng code gọi /Zyro/...
+    # Hệ thống tự động chuyển tiếp nội bộ mà không làm gãy liên kết (Anti-404)
+    RewriteCond %{REQUEST_URI} ^/Zyro/(.*)$ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^Zyro/(.*)$ $1 [L,QSA]
+</IfModule>
+
+# 2. Thiết lập bảng mã mặc định UTF-8
+AddDefaultCharset UTF-8
+
+# 3. Bảo vệ an ninh: Chặn truy cập trực tiếp vào các thư mục và file nhạy cảm
+<FilesMatch "\.(sql|log|env|git|codegraph|md|docx)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Chặn xem cấu trúc danh mục file nếu thiếu index (Options -Indexes)
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>

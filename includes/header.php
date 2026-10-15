@@ -1,3 +1,15 @@
+<?php
+if (session_id() == '') {
+    session_start();
+}
+$cartCount = 0;
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $cartCount += isset($item['quantity']) ? (int)$item['quantity'] : 1;
+    }
+}
+$currentUser = isset($_SESSION['user']) ? $_SESSION['user'] : null;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,38 +27,69 @@
 <!-- Menu top -->
     <div id="menu-top">
         <div id="left-menu-top">
-            <a href="#"><img src="/Zyro/assets/img/Zyro-logo2.png" alt="Logo"></a>
+            <a href="/Zyro/index.php"><img src="/Zyro/assets/img/Zyro-logo2.png" alt="Logo"></a>
         </div>
         <div id="right-menu-top">
             <ul>
                 <li>
-                    <div class="dropdown">
-                        <button type="button" id="drop-tk">
-                            <span>Tài khoản</span>
-                        </button>
-                        <ul class="dropdown-menu" id="drop-tai-khoang" aria-labelledby="drop-tk">
-                            <li>
-                                <div class="dp-tk">
-                                    <a href="/Zyro/pages/DangNhap.php">Đăng nhập</a><br>
-                                </div>
-                                <div class="dp-tk">
-                                    <a href="/Zyro/pages/DangKy.php">Đăng ký</a><br>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                    <?php if ($currentUser): ?>
+                        <div class="dropdown">
+                            <button type="button" id="drop-tk">
+                                <span>Chào, <?php echo htmlspecialchars($currentUser['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            </button>
+                            <ul class="dropdown-menu" id="drop-tai-khoang" aria-labelledby="drop-tk">
+                                <li>
+                                    <?php if (isset($currentUser['phanquyen']) && $currentUser['phanquyen'] == 0): ?>
+                                        <div class="dp-tk">
+                                            <a href="/Zyro/admin/index.php" style="color: #dc3545; font-weight: bold;">Trang Quản Trị</a><br>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="dp-tk">
+                                        <a href="/Zyro/pages/GioHang.php">Giỏ hàng của tôi</a><br>
+                                    </div>
+                                    <div class="dp-tk">
+                                        <a href="/Zyro/pages/LichSuDonHang.php">Đơn hàng của tôi</a><br>
+                                    </div>
+                                    <div class="dp-tk">
+                                        <a href="/Zyro/pages/DangXuat.php">Đăng xuất</a><br>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    <?php else: ?>
+                        <div class="dropdown">
+                            <button type="button" id="drop-tk">
+                                <span>Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu" id="drop-tai-khoang" aria-labelledby="drop-tk">
+                                <li>
+                                    <div class="dp-tk">
+                                        <a href="/Zyro/pages/DangNhap.php">Đăng nhập</a><br>
+                                    </div>
+                                    <div class="dp-tk">
+                                        <a href="/Zyro/pages/DangKy.php">Đăng ký</a><br>
+                                    </div>
+                                    <div class="dp-tk">
+                                        <a href="/Zyro/pages/LichSuDonHang.php">Tra cứu đơn hàng</a><br>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
                 </li>
                 <li>|</li>
-                <li><a href="#">Trợ giúp</a></li>
+                <li><a href="/Zyro/pages/LichSuDonHang.php">Tra cứu đơn hàng</a></li>
                 <li>|</li>
-                <li><a href="#">Tham gia Zyro</a></li>
+                <li><a href="/Zyro/pages/GioiThieu.php">Giới thiệu & Tin tức</a></li>
+                <li>|</li>
+                <li><a href="/Zyro/pages/SanPham.php">Cửa hàng</a></li>
             </ul>
         </div>
     </div>
     <nav class="navbar navbar-expand-lg navbar-light" id="menu-main">
         <div class="container-fluid">
             <div id="menu-main-left">
-                <a class="navbar-brand" id="Logo-Zyro" href="">ZYRO</a>
+                <a class="navbar-brand" id="Logo-Zyro" href="/Zyro/index.php">ZYRO</a>
             </div>
 
 <!-- Menu chính -->
@@ -294,11 +337,16 @@
                 </div>
 
                 <div class="box-icon-menu-main">
-                    <a href="#"><img id="icon-like" src="./assets/icon/like.png" alt="like"></a>
+                    <a href="#"><img id="icon-like" src="/Zyro/assets/icon/like.png" alt="like"></a>
                 </div>
 
-                <div class="box-icon-menu-main">
-                    <a href="./pages/GioHang.php"><img id="icon-bag" src="/Zyro/assets/icon/bag-shopping.png" alt="bag shopping"></a>
+                <div class="box-icon-menu-main" style="position: relative;">
+                    <a href="/Zyro/pages/GioHang.php">
+                        <img id="icon-bag" src="/Zyro/assets/icon/bag-shopping.png" alt="bag shopping">
+                        <?php if ($cartCount > 0): ?>
+                            <span class="badge-cart-count"><?php echo $cartCount > 99 ? '99+' : $cartCount; ?></span>
+                        <?php endif; ?>
+                    </a>
                 </div>
             </div>
             

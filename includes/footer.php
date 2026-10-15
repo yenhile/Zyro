@@ -28,7 +28,7 @@
                 <div class="box-footer">
                     <p><span class="h-drop">Trợ giúp</span></p>
                     <a href="#">Nhận trợ giúp</a><br>
-                    <a href="#">Trạng thái đơn hàng</a><br>
+                    <a href="/Zyro/pages/LichSuDonHang.php">Tra cứu & Trạng thái đơn hàng</a><br>
                     <a href="#">Giao hàng</a><br>
                     <a href="#">Trả hàng</a><br>
                     <a href="#">Tùy chọn thanh toán</a><br>
@@ -36,11 +36,9 @@
                 </div>
                 <div class="box-footer">
                     <p><span class="h-drop">Giới thiệu về Zyro</span></p>
-                    <a href="#">Tin tức</a><br>
-                    <a href="#">Nghề nghiệp</a><br>
-                    <a href="#">Nhà đầu tư</a><br>
-                    <a href="#">Tính bền vững</a><br>
-                    <a href="#">Báo cáo mối quan tâm</a><br>
+                    <a href="/Zyro/pages/GioiThieu.php">Về ZYRO Store</a><br>
+                    <a href="/Zyro/pages/GioiThieu.php">Tin tức & Cẩm nang</a><br>
+                    <a href="/Zyro/pages/GioiThieu.php">Chính sách bảo hành</a><br>
                 </div>
             </div>
             <div id="footer-menu">

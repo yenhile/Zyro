@@ -1,0 +1,14 @@
+node_modules/
+.codegraph/
+*.log
+.DS_Store
+Thumbs.db
+
+.agents
+.codegraph
+CSDL/
+rules/
+docs/
+GEMINI.md
+YeuCau_BaiTapLon_PHP.docx
+Project.md
