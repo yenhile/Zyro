@@ -488,6 +488,53 @@ class san_pham extends Zyro
     }
 
     /**
+     * Cập nhật đơn giá sản phẩm (Admin Update Price)
+     */
+    public function cap_nhat_gia_san_pham($productId, $newPrice) {
+        $pdo = $this->ketnoi();
+        if (!$pdo) return false;
+        $productId = (int)$productId;
+        $newPrice = (float)$newPrice;
+        if ($productId <= 0 || $newPrice < 0) return false;
+
+        $stmt = $pdo->prepare("UPDATE sanpham SET price = :price WHERE product_id = :id");
+        $stmt->bindValue(':price', $newPrice);
+        $stmt->bindValue(':id', $productId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Cập nhật toàn diện thông tin sản phẩm (Admin Edit Product)
+     */
+    public function cap_nhat_san_pham($productId, $name, $brandId, $categoryId, $price, $description, $imageUrl = null) {
+        $pdo = $this->ketnoi();
+        if (!$pdo) return false;
+        $productId = (int)$productId;
+        if ($productId <= 0) return false;
+
+        if ($imageUrl !== null && $imageUrl !== '') {
+            $sql = "UPDATE sanpham SET name = :name, brand_id = :brand_id, category_id = :category_id, 
+                    price = :price, description = :description, image_url = :image_url 
+                    WHERE product_id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':image_url', $imageUrl, PDO::PARAM_STR);
+        } else {
+            $sql = "UPDATE sanpham SET name = :name, brand_id = :brand_id, category_id = :category_id, 
+                    price = :price, description = :description 
+                    WHERE product_id = :id";
+            $stmt = $pdo->prepare($sql);
+        }
+
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->bindValue(':brand_id', (int)$brandId, PDO::PARAM_INT);
+        $stmt->bindValue(':category_id', (int)$categoryId, PDO::PARAM_INT);
+        $stmt->bindValue(':price', (float)$price);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+        $stmt->bindValue(':id', $productId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
      * Lấy danh sách bài viết / tin tức mới nhất
      */
     public function lay_danh_sach_bai_viet($limit = 6) {
