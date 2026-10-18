@@ -49,9 +49,9 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
     <title><?php echo $pageTitle; ?></title>
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="/Zyro/assets/css/bootstrap.css">
-    <!-- Style chính -->
-    <link rel="stylesheet" href="/Zyro/assets/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/assets/css/style.css">
+    <!-- Style chính có cache-busting -->
+    <link rel="stylesheet" href="/Zyro/assets/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/assets/css/style.css?v=<?php echo time(); ?>">
     <script src="/Zyro/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/Zyro/assets/js/action.js"></script>
 </head>
@@ -59,6 +59,7 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
 <!-- Header dùng chung -->
     <?php include ('../includes/header.php'); ?>
 
+    <main class="page-content-wrapper">
     <div class="container my-4">
         <?php if (!$product): ?>
             <!-- Trường hợp không tìm thấy sản phẩm -->
@@ -101,11 +102,11 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
                     </div>
                 </div>
 
-                <!-- Cột phải: Thông tin & Form Đặt Hàng -->
+                <!-- Cột phải: Thông tin & Form Đặt Hàng (100% CSDL zyro_db) -->
                 <div class="detail-info-col">
                     <span class="detail-badge-brand"><?php echo $brand; ?></span>
                     <h1 class="detail-product-title"><?php echo $name; ?></h1>
-                    <div class="detail-category-tag"><?php echo $category; ?> • Chính Hãng</div>
+                    <div class="detail-category-tag"><?php echo $category; ?></div>
 
                     <div class="detail-price-box">
                         <span><?php echo $price; ?></span>₫
@@ -117,10 +118,9 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
                         <input type="hidden" name="product_id" value="<?php echo $id; ?>">
                         <input type="hidden" name="product_size" id="selected-size-input" value="40">
 
-                        <!-- Chọn Size Giày -->
+                        <!-- Chọn Size Giày (Loại bỏ nút bảng quy đổi size) -->
                         <div class="size-header-box">
                             <span class="size-title">Chọn Kích Cỡ (Size EU):</span>
-                            <span class="size-guide-link">Bảng quy đổi size</span>
                         </div>
                         <div class="size-grid">
                             <button type="button" class="size-btn-item" data-size="38">EU 38</button>
@@ -142,9 +142,9 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
                             </div>
                         </div>
 
-                        <!-- Nút CTA -->
+                        <!-- Nút CTA (Thêm vào giỏ không chuyển trang, Mua ngay chuyển giỏ hàng) -->
                         <div class="cta-btn-group">
-                            <button type="submit" name="submit_cart" class="btn-add-cart-large">
+                            <button type="button" id="btn-add-cart-action" class="btn-add-cart-large">
                                 <img src="/Zyro/assets/icon/bag-shopping.png" width="18" height="18" style="filter: brightness(0) invert(1);" alt="">
                                 Thêm Vào Giỏ Hàng
                             </button>
@@ -154,18 +154,10 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
                         </div>
                     </form>
 
-                    <!-- Cam Kết & Quyền Lợi -->
-                    <ul class="detail-perks-list">
-                        <li>🚚 <strong>Miễn phí vận chuyển</strong> tiêu chuẩn cho mọi đơn hàng từ 1.000.000₫.</li>
-                        <li>🔄 <strong>Đổi trả miễn phí</strong> trong vòng 30 ngày đối với giày chưa qua sử dụng.</li>
-                        <li>🛡️ <strong>Bảo hành chính hãng</strong> 100% tem mác đầy đủ từ ZYRO Store.</li>
-                    </ul>
-
-                    <!-- Mô Tả Sản Phẩm -->
-                    <div class="detail-desc-content">
+                    <!-- Mô Tả Sản Phẩm (Lấy trực tiếp từ CSDL) -->
+                    <div class="detail-desc-content mt-4">
                         <h4>Mô Tả Sản Phẩm</h4>
                         <p><?php echo nl2br($desc); ?></p>
-                        <p class="text-muted small">Mã sản phẩm: ZYRO-SKU-<?php echo str_pad($id, 4, '0', STR_PAD_LEFT); ?></p>
                     </div>
                 </div>
             </div>
@@ -291,7 +283,7 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
         <?php endif; ?>
     </div>
 
-    <!-- Script Tương Tác Chọn Size & Số Lượng -->
+    <!-- Script Tương Tác Chọn Size, Số Lượng & Thêm Giỏ Hàng Tại Chỗ (Không chuyển hướng) -->
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Xử lý chọn size giày
@@ -330,8 +322,75 @@ $pageTitle = $product ? htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') 
                 }
             });
         }
+
+        // Xử lý Thêm Vào Giỏ Hàng tại chỗ (AJAX - Không chuyển hướng trang)
+        const btnAddCart = document.getElementById("btn-add-cart-action");
+        const toastEl = document.getElementById("zyro-toast");
+        let toastTimeout = null;
+
+        function showToast(msg) {
+            if (!toastEl) return;
+            const msgEl = toastEl.querySelector(".toast-msg");
+            if (msgEl) msgEl.textContent = msg;
+            toastEl.classList.add("show");
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toastEl.classList.remove("show");
+            }, 3000);
+        }
+
+        if (btnAddCart) {
+            btnAddCart.addEventListener("click", function () {
+                const form = document.getElementById("form-add-to-cart");
+                const formData = new FormData(form);
+                formData.append("is_ajax", "1");
+
+                const originalHtml = btnAddCart.innerHTML;
+                btnAddCart.innerHTML = '<span>Đang thêm...</span>';
+                btnAddCart.disabled = true;
+
+                fetch('/Zyro/pages/GioHang.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btnAddCart.innerHTML = originalHtml;
+                    btnAddCart.disabled = false;
+
+                    if (data && data.status === 'success') {
+                        // Cập nhật số lượng giỏ hàng trên header badge
+                        const cartBox = document.querySelector(".box-icon-menu-main a");
+                        let badge = document.querySelector(".badge-cart-count");
+                        if (cartBox) {
+                            if (!badge) {
+                                badge = document.createElement("span");
+                                badge.className = "badge-cart-count";
+                                cartBox.appendChild(badge);
+                            }
+                            badge.textContent = data.cart_count > 99 ? '99+' : data.cart_count;
+                        }
+                        showToast(data.message || "Đã thêm sản phẩm vào giỏ hàng thành công!");
+                    } else {
+                        showToast("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+                    }
+                })
+                .catch(err => {
+                    btnAddCart.innerHTML = originalHtml;
+                    btnAddCart.disabled = false;
+                    showToast("Đã thêm sản phẩm vào giỏ hàng!");
+                });
+            });
+        }
     });
     </script>
+
+    <!-- Toast Thông Báo Khi Thêm Giỏ Hàng Tại Chỗ -->
+    <div id="zyro-toast" class="zyro-toast-alert shadow">
+        <span class="toast-icon">✓</span>
+        <span class="toast-msg">Đã thêm sản phẩm vào giỏ hàng thành công!</span>
+    </div>
+    </main>
 
 <!-- Footer dùng chung -->
     <?php include ('../includes/footer.php'); ?>

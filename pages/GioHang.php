@@ -44,7 +44,30 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-    header("Location: /Zyro/pages/GioHang.php");
+
+    // Nếu gửi qua AJAX (Thêm vào giỏ không chuyển trang)
+    if (isset($_POST['is_ajax']) && $_POST['is_ajax'] == '1') {
+        $totalItems = 0;
+        foreach ($_SESSION['cart'] as $item) {
+            $totalItems += isset($item['quantity']) ? (int)$item['quantity'] : 1;
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(array(
+            'status'     => 'success',
+            'cart_count' => $totalItems,
+            'message'    => 'Đã thêm sản phẩm vào giỏ hàng thành công!'
+        ));
+        exit();
+    }
+
+    // Nếu bấm "Mua Ngay", chuyển hướng đến giỏ hàng để đặt hàng
+    if (isset($_POST['buy_now'])) {
+        header("Location: /Zyro/pages/GioHang.php");
+        exit();
+    }
+
+    // Mặc định quay lại trang chi tiết sản phẩm kèm cờ báo thành công
+    header("Location: /Zyro/pages/ChiTietSanPham.php?id=" . $productId . "&added=1");
     exit();
 }
 
@@ -125,10 +148,13 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Xác định phương thức thanh toán
             $isPayOS = ($paymentMethod === 'PAYOS' || $paymentMethod === 'BANKING');
+            $identCode = null;
             if ($isPayOS) {
                 $initialStatus = 'Chờ thanh toán';
                 $payosOrderCode = (int)(time() . rand(10, 99));
-                $paymentCode = 'ZYRO' . date('ymd') . rand(1000, 9999);
+                // Sinh mã nhận diện 6 chữ số ngẫu nhiên duy nhất (chữ và số không trùng lặp)
+                $identCode = $productModel->sinh_ma_nhan_dien_don_hang(6);
+                $paymentCode = $identCode;
             } else {
                 $initialStatus = 'Chờ xử lý';
                 $payosOrderCode = null;
@@ -147,15 +173,11 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['cart'], 
                 $paymentCode, 
                 $payosOrderCode, 
-                $initialStatus
+                $initialStatus,
+                $identCode
             );
 
             if ($orderId) {
-                if ($isPayOS) {
-                    $paymentCode = 'ZYRO DH' . $orderId;
-                    $productModel->cap_nhat_thong_tin_payos($orderId, $paymentCode, $payosOrderCode);
-                }
-
                 $_SESSION['last_order_id'] = $orderId;
                 // Dọn sạch giỏ hàng
                 $_SESSION['cart'] = array();
@@ -193,9 +215,9 @@ $cartGrandTotal = $cartSubtotal + $cartShippingFee;
     <title>Giỏ Hàng & Thanh Toán — ZYRO Store</title>
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="/Zyro/assets/css/bootstrap.css">
-    <!-- Style chính -->
-    <link rel="stylesheet" href="/Zyro/assets/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/assets/css/style.css">
+    <!-- Style chính có cache-busting -->
+    <link rel="stylesheet" href="/Zyro/assets/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/assets/css/style.css?v=<?php echo time(); ?>">
     <script src="/Zyro/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/Zyro/assets/js/action.js"></script>
 </head>
@@ -203,6 +225,7 @@ $cartGrandTotal = $cartSubtotal + $cartShippingFee;
     <!-- Header dùng chung -->
     <?php include ('../includes/header.php'); ?>
 
+    <main class="page-content-wrapper">
     <div class="container my-4">
         <!-- Breadcrumb -->
         <nav class="zyro-breadcrumb" aria-label="breadcrumb">
@@ -463,6 +486,7 @@ $cartGrandTotal = $cartSubtotal + $cartShippingFee;
             </div>
         <?php endif; ?>
     </div>
+    </main>
 
     <!-- Footer dùng chung -->
     <?php include ('../includes/footer.php'); ?>

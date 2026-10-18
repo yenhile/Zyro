@@ -21,8 +21,8 @@ if (!$order) {
 }
 
 // Nếu đơn hàng đã được thanh toán rồi, chuyển hướng thẳng sang trang Thành Công
-if (trim($order['status']) === 'Đã thanh toán' || trim($order['status']) === 'Đã giao' || trim($order['status']) === 'Đang giao') {
-    header("Location: /Zyro/pages/DatHangThanhCong.php?order_id=" . $orderId);
+if (!empty($order['paid_at']) || trim($order['status']) === 'Chờ xử lý' || trim($order['status']) === 'Đã thanh toán' || trim($order['status']) === 'Đã giao' || trim($order['status']) === 'Đang giao') {
+    header("Location: /Zyro/pages/DatHangThanhCong.php?order_id=" . $orderId . "&paid=1");
     exit();
 }
 
@@ -30,19 +30,21 @@ $orderItems = $productModel->lay_chi_tiet_san_pham_don_hang($orderId);
 $orderCode = (int)$order['orders_id'];
 $amount = (int)$order['total_price'];
 
-// Sinh mã ghi chú tự sinh định danh nếu chưa có trong CSDL
-$paymentCode = !empty($order['payment_code']) ? $order['payment_code'] : PayOS_Service::sinh_ma_ghi_chu($orderId);
+// Lấy mã nhận diện 6 ký tự duy nhất từ CSDL hoặc sinh mới
+$identCode = !empty($order['ident_code']) ? $order['ident_code'] : $productModel->sinh_ma_nhan_dien_don_hang(6);
 
-// Đảm bảo CSDL lưu mã ghi chú tự sinh và payos_order_code
-if (empty($order['payment_code']) || empty($order['payos_order_code'])) {
-    $productModel->cap_nhat_thong_tin_payos($orderId, $paymentCode, $orderCode);
+// Sinh mã ghi chú tự sinh định danh nếu chưa có trong CSDL
+$paymentCode = !empty($order['payment_code']) ? $order['payment_code'] : PayOS_Service::sinh_ma_ghi_chu($orderId, $identCode);
+
+// Đảm bảo CSDL lưu mã ghi chú tự sinh, mã nhận diện và payos_order_code
+if (empty($order['payment_code']) || empty($order['payos_order_code']) || empty($order['ident_code'])) {
+    $productModel->cap_nhat_thong_tin_payos($orderId, $paymentCode, $orderCode, $identCode);
 }
 
-// Chuẩn bị URL callback
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
-$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-$returnUrl = $protocol . $host . "/Zyro/pages/DatHangThanhCong.php?order_id=" . $orderId;
-$cancelUrl = $protocol . $host . "/Zyro/pages/GioHang.php?order_cancelled=" . $orderId;
+// Chuẩn bị URL callback linh hoạt (tương thích cả Localhost /Zyro lẫn Hosting domain gốc)
+$baseUrl = PayOS_Config::getBaseUrl();
+$returnUrl = PayOS_Config::getReturnUrl($orderId);
+$cancelUrl = PayOS_Config::getCancelUrl($orderId);
 
 $buyerInfo = array(
     'name' => $order['receiver_name'],
@@ -50,9 +52,13 @@ $buyerInfo = array(
     'address' => $order['shipping_address']
 );
 
-// Tạo link và mã QR PayOS
-$payosResult = PayOS_Service::tao_link_thanh_toan($orderCode, $amount, $paymentCode, array(), $returnUrl, $cancelUrl, $buyerInfo);
+// Tạo link và mã QR PayOS với mã nhận diện 6 ký tự
+$payosResult = PayOS_Service::tao_link_thanh_toan($orderCode, $amount, $paymentCode, array(), $returnUrl, $cancelUrl, $buyerInfo, $identCode);
 $qrImageUrl = $payosResult['qr_image_url'];
+$payosCode = isset($payosResult['payos_code']) ? $payosResult['payos_code'] : 'POS' . rand(10000, 99999);
+$fullDescription = isset($payosResult['full_description']) ? $payosResult['full_description'] : ($payosCode . ' ' . $identCode);
+$checkoutUrl = !empty($payosResult['checkoutUrl']) ? $payosResult['checkoutUrl'] : '';
+$isOfficialPayOS = (isset($payosResult['source']) && $payosResult['source'] === 'payos_api');
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -63,8 +69,8 @@ $qrImageUrl = $payosResult['qr_image_url'];
     <title>Thanh Toán Đơn Hàng #<?php echo $orderCode; ?> — ZYRO Store</title>
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="/Zyro/assets/css/bootstrap.css">
-    <link rel="stylesheet" href="/Zyro/assets/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/assets/css/style.css">
+    <link rel="stylesheet" href="/Zyro/assets/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/assets/css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/Zyro/assets/js/bootstrap.bundle.min.js"></script>
     <style>
@@ -196,6 +202,7 @@ $qrImageUrl = $payosResult['qr_image_url'];
     <!-- Header dùng chung -->
     <?php include('../includes/header.php'); ?>
 
+    <main class="page-content-wrapper">
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-xl-7">
@@ -205,7 +212,7 @@ $qrImageUrl = $payosResult['qr_image_url'];
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="badge bg-primary px-3 py-1 rounded-pill">Cổng Thanh Toán PayOS</span>
                             <span class="timer-badge">
-                                <i class="fas fa-clock"></i> <span id="countdown">15:00</span>
+                                <i class="fas fa-clock"></i> <span id="countdown">10:00</span>
                             </span>
                         </div>
                         <h2 class="h4 fw-bold mb-1">QUÉT MÃ QR ĐỂ THANH TOÁN</h2>
@@ -259,10 +266,25 @@ $qrImageUrl = $payosResult['qr_image_url'];
                                 </div>
                             </div>
                             <div class="info-row">
+                                <span class="text-muted">Mã nhận diện (6 ký tự):</span>
+                                <div>
+                                    <code class="fs-6 fw-bold text-primary bg-white px-2 py-1 rounded border me-2" id="valIdent"><?php echo htmlspecialchars($identCode, ENT_QUOTES, 'UTF-8'); ?></code>
+                                    <button type="button" class="copy-btn" onclick="copyToClipboard('<?php echo addslashes($identCode); ?>')">
+                                        <i class="fas fa-copy"></i> Sao chép
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="text-muted">Mã đối soát PayOS:</span>
+                                <div>
+                                    <code class="fs-6 fw-bold text-secondary bg-white px-2 py-1 rounded border me-2"><?php echo htmlspecialchars($payosCode, ENT_QUOTES, 'UTF-8'); ?></code>
+                                </div>
+                            </div>
+                            <div class="info-row">
                                 <span class="text-muted">Nội dung ghi chú (*Bắt buộc):</span>
                                 <div>
-                                    <code class="fs-6 text-dark bg-white px-2 py-1 rounded border me-2" id="valMemo"><?php echo htmlspecialchars($paymentCode, ENT_QUOTES, 'UTF-8'); ?></code>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard('<?php echo addslashes($paymentCode); ?>')">
+                                    <code class="fs-6 fw-bold text-danger bg-white px-2 py-1 rounded border me-2" id="valMemo"><?php echo htmlspecialchars($fullDescription, ENT_QUOTES, 'UTF-8'); ?></code>
+                                    <button type="button" class="copy-btn" onclick="copyToClipboard('<?php echo addslashes($fullDescription); ?>')">
                                         <i class="fas fa-copy"></i> Sao chép
                                     </button>
                                 </div>
@@ -271,19 +293,51 @@ $qrImageUrl = $payosResult['qr_image_url'];
 
                         <!-- Lưu ý chuyển tiền -->
                         <div class="text-start small text-muted mb-4 p-3 bg-white border rounded-3">
-                            <strong class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Lưu ý quan trọng:</strong>
+                            <strong class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>Cơ chế nhận diện thông minh PayOS:</strong>
                             <ul class="mb-0 mt-1 ps-3">
-                                <li>Vui lòng giữ nguyên <strong>Mã ghi chú</strong> để giao dịch được Webhook tự động xác nhận tức thì.</li>
-                                <li>Không chỉnh sửa số tiền thanh toán hiển thị trên App ngân hàng.</li>
+                                <li>Nội dung ghi chú gồm <strong>[Mã PayOS] [Mã nhận diện 6 chữ số]</strong> (<code><?php echo htmlspecialchars($fullDescription); ?></code>) đã được mã hóa tự động vào mã QR VietQR.</li>
+                                <li>Bot PayOS sẽ tự động quét đối chiếu mã nhận diện <strong><?php echo htmlspecialchars($identCode); ?></strong> và xác nhận đơn hàng ngay lập tức.</li>
+                                <li>Không sửa đổi nội dung ghi chú và số tiền khi chuyển khoản.</li>
                             </ul>
+                        </div>
+
+                        <?php if (!empty($checkoutUrl) && $checkoutUrl !== $returnUrl): ?>
+                        <!-- Nút mở trực tiếp cổng thanh toán PayOS -->
+                        <div class="mb-4">
+                            <a href="<?php echo htmlspecialchars($checkoutUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-primary fw-bold rounded-pill px-4 py-2 shadow-sm w-100" style="font-size: 15px;">
+                                <i class="fas fa-external-link-alt me-1"></i> Mở Trang Thanh Toán PayOS (Trực Tuyến)
+                            </a>
+                            <div class="small text-muted mt-1 text-center">
+                                Hoặc quét mã QR ngân hàng phía trên trực tiếp từ ứng dụng ngân hàng của bạn
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Công cụ test giả lập Localhost -->
+                        <div class="alert alert-warning border border-warning rounded-4 p-3 text-start mb-4 shadow-sm">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        <i class="fas fa-flask text-warning me-1"></i> CÔNG CỤ TEST LOCAL (Chưa có Domain Public)
+                                    </div>
+                                    <div class="small text-muted">
+                                        Bấm nút bên cạnh để giả lập PayOS nhận tiền, khớp mã <strong><?php echo htmlspecialchars($identCode); ?></strong> và chuyển trạng thái đơn sang <em>Chờ xử lý</em>.
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-warning text-dark fw-bold px-3 py-2 rounded-pill shadow-sm" id="btnSimulatePayOS" onclick="simulatePayOSTransfer()">
+                                        <i class="fas fa-bolt me-1"></i> Giả lập Khách Quét Mã & Thanh Toán
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Các hành động thay thế -->
                         <div class="d-flex justify-content-between align-items-center pt-2">
-                            <a href="/Zyro/pages/GioHang.php" class="btn btn-link text-muted text-decoration-none small">
+                            <a href="<?php echo $baseUrl; ?>/pages/GioHang.php" class="btn btn-link text-muted text-decoration-none small">
                                 ← Quay lại Giỏ Hàng
                             </a>
-                            <a href="/Zyro/pages/DatHangThanhCong.php?order_id=<?php echo $orderCode; ?>" class="btn btn-outline-dark rounded-pill px-4 btn-sm">
+                            <a href="<?php echo $baseUrl; ?>/pages/DatHangThanhCong.php?order_id=<?php echo $orderCode; ?>" class="btn btn-outline-dark rounded-pill px-4 btn-sm">
                                 Xem Thông Tin Đơn Hàng →
                             </a>
                         </div>
@@ -300,23 +354,26 @@ $qrImageUrl = $payosResult['qr_image_url'];
                 ✓
             </div>
             <h3 class="fw-bold text-dark mb-2">THANH TOÁN THÀNH CÔNG!</h3>
-            <p class="text-muted small mb-4">PayOS đã xác nhận giao dịch chuyển khoản cho đơn hàng #<?php echo $orderCode; ?>. Đang chuyển hướng...</p>
+            <p class="text-muted small mb-4">PayOS đã xác nhận giao dịch chuyển khoản cho đơn hàng #<?php echo $orderCode; ?>. Đơn hàng đang được Admin xử lý...</p>
             <div class="spinner-border text-success" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
     </div>
+    </main>
 
     <!-- Footer dùng chung -->
     <?php include('../includes/footer.php'); ?>
 
     <script>
+        var baseUrl = '<?php echo $baseUrl; ?>';
+        var orderId = <?php echo $orderCode; ?>;
+
         // 1. Sao chép nội dung vào Clipboard
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function() {
                 alert('Đã sao chép: ' + text);
             }).catch(function(err) {
-                // Fallback cho trình duyệt cũ
                 var dummy = document.createElement("input");
                 document.body.appendChild(dummy);
                 dummy.setAttribute("value", text);
@@ -327,8 +384,8 @@ $qrImageUrl = $payosResult['qr_image_url'];
             });
         }
 
-        // 2. Đồng hồ đếm ngược 15 phút
-        var timeLeft = 15 * 60;
+        // 2. Đồng hồ đếm ngược 10 phút (Theo quy chuẩn PayOS của Zyro)
+        var timeLeft = 10 * 60;
         var countdownEl = document.getElementById('countdown');
         var timerInterval = setInterval(function() {
             timeLeft--;
@@ -343,9 +400,8 @@ $qrImageUrl = $payosResult['qr_image_url'];
         }, 1000);
 
         // 3. Cơ chế Polling tự động kiểm tra trạng thái thanh toán qua Webhook mỗi 3 giây
-        var orderId = <?php echo $orderCode; ?>;
         var pollInterval = setInterval(function() {
-            fetch('/Zyro/api/check_order_status.php?order_id=' + orderId)
+            fetch(baseUrl + '/api/check_order_status.php?order_id=' + orderId)
                 .then(function(res) { return res.json(); })
                 .then(function(data) {
                     if (data && data.is_paid) {
@@ -354,14 +410,43 @@ $qrImageUrl = $payosResult['qr_image_url'];
                         // Hiển thị Popup thành công
                         document.getElementById('successOverlay').style.display = 'flex';
                         setTimeout(function() {
-                            window.location.href = '/Zyro/pages/DatHangThanhCong.php?order_id=' + orderId + '&paid=1';
-                        }, 2000);
+                            window.location.href = baseUrl + '/pages/DatHangThanhCong.php?order_id=' + orderId + '&paid=1';
+                        }, 1800);
                     }
                 })
                 .catch(function(err) {
                     console.log('Polling check error:', err);
                 });
         }, 3000);
+
+        // 4. Giả lập thanh toán PayOS trên Localhost (khi chưa cấu hình Public Domain)
+        function simulatePayOSTransfer() {
+            var btn = document.getElementById('btnSimulatePayOS');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang đối soát mã PayOS...';
+            }
+            fetch(baseUrl + '/api/payos_simulate_payment.php?order_id=' + orderId)
+                .then(function(res) { return res.json(); })
+                .then(function(res) {
+                    if (res && res.success) {
+                        // Thành công, polling sẽ phát hiện và cập nhật UI ngay
+                    } else {
+                        alert('Lỗi giả lập: ' + (res ? res.message : 'Không xác định'));
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-bolt me-1"></i> Giả lập Khách Quét Mã & Thanh Toán';
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    alert('Lỗi kết nối API giả lập: ' + err);
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-bolt me-1"></i> Giả lập Khách Quét Mã & Thanh Toán';
+                    }
+                });
+        }
     </script>
 </body>
 

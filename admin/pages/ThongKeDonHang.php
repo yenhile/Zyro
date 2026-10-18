@@ -57,10 +57,42 @@ if (!empty($trendData)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo Cáo & Thống Kê Đơn Hàng — ZYRO Admin</title>
-    <link rel="stylesheet" href="/Zyro/admin/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/index.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css">
+    <link rel="stylesheet" href="/Zyro/admin/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/index.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css?v=<?php echo time(); ?>">
     <style>
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .app-wrapper {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+        #sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+            height: 100vh !important;
+            z-index: 1050 !important;
+        }
+        #container {
+            margin-left: 250px !important;
+            width: calc(100% - 250px) !important;
+            max-width: calc(100% - 250px) !important;
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -258,6 +290,7 @@ if (!empty($trendData)) {
         /* Top Shoes Table */
         .top-shoes-table {
             width: 100%;
+            min-width: 700px;
             border-collapse: collapse;
             font-size: 13px;
         }
@@ -364,7 +397,7 @@ if (!empty($trendData)) {
         <div id="container">
             <?php include('../includes/header.php'); ?>
 
-            <div style="padding: 24px;" id="reportPrintArea">
+            <div class="admin-content-box" id="reportPrintArea">
                 <!-- Tiêu đề trang & Nút In Báo Cáo -->
                 <div class="page-header">
                     <div>
@@ -415,6 +448,9 @@ if (!empty($trendData)) {
                         </div>
                         <div class="kpi-subtext">
                             Tiềm năng: <strong><?php echo number_format($overview['potential_revenue']); ?>đ</strong>
+                            <?php if (!empty($overview['refunded_amount']) && $overview['refunded_amount'] > 0): ?>
+                                | <span style="color: #ea580c;" title="Đã hoàn trả Banking">-<?php echo number_format($overview['refunded_amount']); ?>đ hoàn</span>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -427,7 +463,7 @@ if (!empty($trendData)) {
                             <?php echo (int)$overview['total_orders']; ?>
                         </div>
                         <div class="kpi-subtext">
-                            Đã giao: <strong><?php echo (int)$overview['delivered_orders']; ?></strong> | Đang giao: <strong><?php echo (int)$overview['shipping_orders']; ?></strong>
+                            Chờ xử lý: <strong><?php echo (int)$overview['pending_orders']; ?></strong> | Đang giao: <strong><?php echo (int)$overview['shipping_orders']; ?></strong> | Đã giao: <strong><?php echo (int)$overview['delivered_orders']; ?></strong>
                         </div>
                     </div>
 
@@ -440,20 +476,20 @@ if (!empty($trendData)) {
                             <?php echo (int)$overview['total_shoes_sold']; ?> <span style="font-size: 15px; font-weight: 600;">đôi</span>
                         </div>
                         <div class="kpi-subtext">
-                            Tổng sản phẩm trong các đơn hợp lệ
+                            Sản phẩm trong các đơn hợp lệ (trừ hủy/hoàn)
                         </div>
                     </div>
 
                     <div class="kpi-box teal">
                         <div class="kpi-label">
-                            <span>Tỷ Lệ Giao Thành Công</span>
+                            <span>Tỷ Lệ Thành Công</span>
                             <span>🎯</span>
                         </div>
                         <div class="kpi-number" style="color: #0d9488;">
                             <?php echo $overview['success_rate']; ?>%
                         </div>
                         <div class="kpi-subtext">
-                            Đơn hủy: <strong><?php echo (int)$overview['cancelled_orders']; ?></strong> đơn
+                            Đã thanh toán/thu tiền: <strong><?php echo (int)$overview['success_orders_count']; ?></strong> / <?php echo (int)$overview['total_orders']; ?> đơn
                         </div>
                     </div>
 
@@ -466,7 +502,7 @@ if (!empty($trendData)) {
                             <?php echo number_format($overview['avg_order_value']); ?>đ
                         </div>
                         <div class="kpi-subtext">
-                            AOV (Average Order Value)
+                            AOV (Average Order Value thực thu)
                         </div>
                     </div>
                 </div>
@@ -491,7 +527,7 @@ if (!empty($trendData)) {
                         <div style="display: flex; justify-content: center; gap: 24px; margin-top: 16px; font-size: 13px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="display: inline-block; width: 14px; height: 14px; background: #0284c7; border-radius: 4px;"></span>
-                                <span>Doanh Thu (VNĐ)</span>
+                                <span>Doanh Thu Thực Thu (VNĐ)</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="display: inline-block; width: 14px; height: 14px; background: #f59e0b; border-radius: 50%;"></span>
@@ -504,40 +540,44 @@ if (!empty($trendData)) {
                     <div class="panel-box">
                         <div class="panel-header">
                             <h3 class="panel-title">
-                                <span>💳 Cơ Cấu Thanh Toán</span>
+                                <span>💳 Cơ Cấu Thanh Toán Thực Tế</span>
                             </h3>
                         </div>
 
                         <?php 
-                            $totalPmCount = max(1, $paymentBreakdown['total_count']);
-                            $codPct = round(($paymentBreakdown['cod_count'] / $totalPmCount) * 100);
-                            $bankPct = round(($paymentBreakdown['banking_count'] / $totalPmCount) * 100);
-                            $otherPct = 100 - $codPct - $bankPct;
+                            $totalRealRev = max(1, $paymentBreakdown['total_real_revenue']);
+                            $codAmt = $paymentBreakdown['cod_amount'];
+                            $bankAmt = $paymentBreakdown['banking_amount'];
+                            $codPct = ($paymentBreakdown['total_real_revenue'] > 0) ? round(($codAmt / $totalRealRev) * 100) : 0;
+                            $bankPct = ($paymentBreakdown['total_real_revenue'] > 0) ? (100 - $codPct) : 0;
                         ?>
 
                         <div class="breakdown-item">
                             <div class="breakdown-label">
-                                <span>💵 Tiền mặt khi nhận (COD)</span>
+                                <span>💵 Tiền mặt (COS / COD)</span>
                                 <strong><?php echo (int)$paymentBreakdown['cod_count']; ?> đơn (<?php echo $codPct; ?>%)</strong>
                             </div>
                             <div class="progress-bar-bg">
                                 <div class="progress-bar-fill" style="width: <?php echo $codPct; ?>%; background: #10b981;"></div>
                             </div>
-                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-                                Doanh thu: <?php echo number_format($paymentBreakdown['cod_amount']); ?>đ
+                            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                                Đã thu thực tế: <strong><?php echo number_format($codAmt); ?>đ</strong>
                             </div>
                         </div>
 
                         <div class="breakdown-item">
                             <div class="breakdown-label">
-                                <span>💳 VietQR MB Bank (Chuyển khoản)</span>
+                                <span>💳 PayOS / VietQR (Chuyển khoản)</span>
                                 <strong><?php echo (int)$paymentBreakdown['banking_count']; ?> đơn (<?php echo $bankPct; ?>%)</strong>
                             </div>
                             <div class="progress-bar-bg">
                                 <div class="progress-bar-fill" style="width: <?php echo $bankPct; ?>%; background: #0284c7;"></div>
                             </div>
-                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-                                Doanh thu: <?php echo number_format($paymentBreakdown['banking_amount']); ?>đ
+                            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                                Doanh thu ròng: <strong><?php echo number_format($bankAmt); ?>đ</strong>
+                                <?php if (!empty($paymentBreakdown['banking_refund']) && $paymentBreakdown['banking_refund'] > 0): ?>
+                                    <span style="color: #ea580c;">(Đã trừ <?php echo number_format($paymentBreakdown['banking_refund']); ?>đ hoàn trả)</span>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -546,7 +586,7 @@ if (!empty($trendData)) {
                                 <span>📦 Trạng Thái Đơn Hàng</span>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; font-size: 12px;">
                                 <div style="background: #fef3c7; color: #92400e; padding: 8px 12px; border-radius: 8px; font-weight: 700;">
                                     ⏳ Chờ xử lý: <?php echo (int)$statusStats['choxuly']; ?>
                                 </div>
@@ -555,6 +595,9 @@ if (!empty($trendData)) {
                                 </div>
                                 <div style="background: #dcfce7; color: #15803d; padding: 8px 12px; border-radius: 8px; font-weight: 700;">
                                     ✅ Đã giao: <?php echo (int)$statusStats['dagiao']; ?>
+                                </div>
+                                <div style="background: #fff7ed; color: #ea580c; padding: 8px 12px; border-radius: 8px; font-weight: 700;">
+                                    🔄 Hoàn trả: <?php echo (int)($statusStats['hoantra'] + $statusStats['dahoantra']); ?>
                                 </div>
                                 <div style="background: #fee2e2; color: #b91c1c; padding: 8px 12px; border-radius: 8px; font-weight: 700;">
                                     ❌ Đã hủy: <?php echo (int)$statusStats['dahuy']; ?>
@@ -580,7 +623,8 @@ if (!empty($trendData)) {
                             Chưa có dữ liệu bán hàng trong khoảng thời gian này.
                         </div>
                     <?php else: ?>
-                        <table class="top-shoes-table">
+                        <div class="admin-table-responsive">
+                            <table class="top-shoes-table">
                             <thead>
                                 <tr>
                                     <th style="width: 50px; text-align: center;">HẠNG</th>
@@ -648,6 +692,7 @@ if (!empty($trendData)) {
                                 ?>
                             </tbody>
                         </table>
+                        </div>
                     <?php endif; ?>
                 </div>
 

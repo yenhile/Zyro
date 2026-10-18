@@ -83,10 +83,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chỉnh Sửa Sản Phẩm #<?php echo $productId; ?> — ZYRO Admin</title>
-    <link rel="stylesheet" href="/Zyro/admin/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/index.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css">
+    <link rel="stylesheet" href="/Zyro/admin/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/index.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css?v=<?php echo time(); ?>">
     <style>
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .app-wrapper {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+        #sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+            height: 100vh !important;
+            z-index: 1050 !important;
+        }
+        #container {
+            margin-left: 250px !important;
+            width: calc(100% - 250px) !important;
+            max-width: calc(100% - 250px) !important;
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
         .edit-form-card {
             background: #FFFFFF;
             border-radius: 16px;

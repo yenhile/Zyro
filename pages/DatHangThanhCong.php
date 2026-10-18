@@ -8,6 +8,9 @@ $productModel = new san_pham();
 
 $orderId = isset($_GET['order_id']) ? (int)$_GET['order_id'] : (isset($_SESSION['last_order_id']) ? (int)$_SESSION['last_order_id'] : 0);
 
+// Tự động kiểm tra hủy các đơn PayOS quá 10 phút chưa thanh toán
+$productModel->tu_dong_huy_don_qua_han_payos();
+
 $order = null;
 $orderItems = array();
 
@@ -26,9 +29,9 @@ if ($orderId > 0) {
     <title>Đặt Hàng Thành Công — ZYRO Store</title>
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="/Zyro/assets/css/bootstrap.css">
-    <!-- Style chính -->
-    <link rel="stylesheet" href="/Zyro/assets/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/assets/css/style.css">
+    <!-- Style chính có cache-busting -->
+    <link rel="stylesheet" href="/Zyro/assets/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/assets/css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/Zyro/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/Zyro/assets/js/action.js"></script>
@@ -167,6 +170,7 @@ if ($orderId > 0) {
     <!-- Header dùng chung -->
     <?php include ('../includes/header.php'); ?>
 
+    <main class="page-content-wrapper">
     <div class="container my-4">
         <!-- Breadcrumb -->
         <nav class="zyro-breadcrumb" aria-label="breadcrumb">
@@ -193,9 +197,12 @@ if ($orderId > 0) {
             $orderCode = 'ZYRO-DH' . str_pad($order['orders_id'], 5, '0', STR_PAD_LEFT);
             $orderDate = date("d/m/Y H:i", strtotime($order['order_date']));
             $status = $order['status'] ? $order['status'] : 'Chờ xử lý';
-            $isPayOS = ($order['payment_method'] === 'PAYOS' || $order['payment_method'] === 'BANKING');
-            $isPaid = ($status === 'Đã thanh toán');
+            $isPayOS = san_pham::la_thanh_toan_banking($order['payment_method']) || !empty($order['payos_transaction_id']);
+            $isCash = !$isPayOS;
+            $isPaid = (!empty($order['paid_at']) || !empty($order['payos_transaction_id']) || $status === 'Đã thanh toán');
             $isPendingPayment = ($status === 'Chờ thanh toán');
+            $isRefundFlow = ($status === 'Hoàn trả' || $status === 'Đã hoàn trả' || stripos($status, 'hoàn') !== false);
+            $isCancelled = ($status === 'Đã hủy' || stripos($status, 'hủy') !== false);
             
             // Tính subtotal
             $subtotal = 0;
@@ -206,54 +213,114 @@ if ($orderId > 0) {
         ?>
             <!-- Hero Success Box -->
             <div class="order-success-hero">
-                <div class="order-success-icon" style="<?php echo $isPaid ? 'background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);' : ($isPendingPayment ? 'background: #f59e0b; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35);' : ''); ?>">
-                    <i class="fas <?php echo $isPaid ? 'fa-check-double' : ($isPendingPayment ? 'fa-clock' : 'fa-check'); ?>"></i>
+                <div class="order-success-icon" style="<?php echo $isCancelled ? 'background: #ef4444; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);' : ($isRefundFlow ? 'background: #f97316; box-shadow: 0 10px 25px rgba(249, 115, 22, 0.35);' : ($isPaid ? 'background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);' : ($isPendingPayment ? 'background: #f59e0b; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35);' : ''))); ?>">
+                    <i class="fas <?php echo $isCancelled ? 'fa-times' : ($isRefundFlow ? 'fa-sync-alt' : ($isPaid ? 'fa-check-double' : ($isPendingPayment ? 'fa-clock' : 'fa-check'))); ?>"></i>
                 </div>
                 
-                <?php if ($isPaid): ?>
+                <?php if ($isCancelled): ?>
+                    <h1 class="h3 fw-bold mb-1 text-danger">ĐƠN HÀNG ĐÃ BỊ HỦY</h1>
+                    <p class="text-muted mb-2"><?php echo !empty($order['refund_note']) ? htmlspecialchars($order['refund_note'], ENT_QUOTES, 'UTF-8') : 'Đơn hàng này đã bị hủy trên hệ thống.'; ?></p>
+                <?php elseif ($isRefundFlow): ?>
+                    <?php if ($status === 'Đã hoàn trả'): ?>
+                        <h1 class="h3 fw-bold mb-1" style="color: #059669;">ĐƠN HÀNG ĐÃ ĐƯỢC HOÀN TRẢ THÀNH CÔNG!</h1>
+                        <p class="text-muted mb-2">ZYRO Store đã hoàn tất chuyển khoản hoàn tiền / tất toán cho đơn hàng này.</p>
+                    <?php else: ?>
+                        <h1 class="h3 fw-bold mb-1" style="color: #ea580c;">ĐƠN HÀNG ĐANG TRONG QUY TRÌNH HOÀN TRẢ</h1>
+                        <p class="text-muted mb-2">Hệ thống đang xử lý đối soát và hoàn tiền vào tài khoản của bạn theo quy định.</p>
+                    <?php endif; ?>
+                <?php elseif ($isPaid): ?>
                     <h1 class="h3 fw-bold mb-1 text-success">THANH TOÁN THÀNH CÔNG QUA PAYOS!</h1>
-                    <p class="text-muted mb-2">Giao dịch trực tuyến của bạn đã được cổng thanh toán <strong>PayOS</strong> xác nhận tự động. ZYRO đang đóng gói sản phẩm để gửi sớm nhất!</p>
+                    <p class="text-muted mb-2">Giao dịch của bạn đã được cổng thanh toán <strong>PayOS</strong> xác nhận thành công. Đơn hàng đang được Admin xử lý và chuẩn bị giao hàng!</p>
                 <?php elseif ($isPendingPayment): ?>
-                    <h1 class="h3 fw-bold mb-1 text-dark">ĐÃ TIẾP NHẬN ĐƠN HÀNG — CHỜ QUÉT MÃ THANH TOÁN</h1>
+                    <h1 class="h3 fw-bold mb-1 text-dark">ĐÃ TIẾP NHẬN ĐƠN HÀNG — CHỜ QUÉT MÃ THANH TOÁN (10 PHÚT)</h1>
                     <p class="text-muted mb-2">Đơn hàng #<?php echo $orderCode; ?> đang chờ bạn quét mã QR PayOS để hoàn tất xác thực thanh toán.</p>
                 <?php else: ?>
                     <h1 class="h3 fw-bold mb-1 text-dark">ĐẶT HÀNG TRỰC TUYẾN THÀNH CÔNG!</h1>
-                    <p class="text-muted mb-2">Cảm ơn bạn đã tin chọn <strong>ZYRO Store</strong>. Đơn hàng tiền mặt (COD) của bạn đã được ghi nhận vào hệ thống.</p>
+                    <p class="text-muted mb-2">Cảm ơn bạn đã tin chọn <strong>ZYRO Store</strong>. Đơn hàng tiền mặt (COS) của bạn đã được ghi nhận vào hệ thống.</p>
                 <?php endif; ?>
 
                 <div class="order-code-tag">
                     Mã Vận Đơn: #<?php echo $orderCode; ?>
                 </div>
+                <?php if (!empty($order['ident_code'])): ?>
+                    <div class="mb-2 small text-muted">
+                        Mã nhận diện đối soát PayOS: <span class="badge bg-light text-primary border border-primary px-2 py-1 fs-6"><?php echo htmlspecialchars($order['ident_code'], ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                <?php endif; ?>
                 <div class="text-muted small">
                     Thời gian đặt: <strong><?php echo $orderDate; ?></strong> | Trạng thái: 
-                    <?php if ($isPaid): ?>
+                    <?php if ($status === 'Đã hoàn trả'): ?>
+                        <span class="badge bg-secondary px-3 py-1 rounded-pill">ĐÃ HOÀN TRẢ</span>
+                    <?php elseif ($status === 'Hoàn trả'): ?>
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill">ĐANG HOÀN TRẢ</span>
+                    <?php elseif ($isCancelled): ?>
+                        <span class="badge bg-danger px-3 py-1 rounded-pill">ĐÃ HỦY</span>
+                    <?php elseif ($isPaid): ?>
                         <span class="badge bg-success px-3 py-1 rounded-pill">ĐÃ THANH TOÁN (PAYOS VERIFIED)</span>
                     <?php elseif ($isPendingPayment): ?>
                         <span class="badge bg-warning text-dark px-3 py-1 rounded-pill">CHỜ THANH TOÁN PAYOS</span>
                     <?php else: ?>
-                        <span class="badge bg-secondary px-3 py-1 rounded-pill"><?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></span>
+                        <span class="badge bg-primary px-3 py-1 rounded-pill"><?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></span>
                     <?php endif; ?>
                 </div>
 
-                <!-- Timeline 4 Bước -->
-                <div class="order-timeline mt-4">
-                    <div class="timeline-step completed">
-                        <div class="step-circle"><i class="fas fa-check"></i></div>
-                        <div class="step-title">Đã Tiếp Nhận</div>
+                <!-- TIẾN TRÌNH THAY ĐỔI ĐỘNG (DYNAMIC STEPPER) -->
+                <?php if ($isCancelled): ?>
+                    <div class="alert alert-danger rounded-4 py-2 px-3 small mt-4 d-inline-block text-start">
+                        <i class="fas fa-exclamation-circle me-1"></i>Đơn hàng đã được đánh dấu hủy và không thể tiếp tục giao.
                     </div>
-                    <div class="timeline-step active">
-                        <div class="step-circle"><i class="fas fa-box"></i></div>
-                        <div class="step-title">Đang Đóng Gói</div>
+                <?php elseif ($isRefundFlow): ?>
+                    <!-- LUỒNG HOÀN TRẢ ĐỘNG (Thay thế hoàn toàn luồng Đã giao) -->
+                    <div class="order-timeline mt-4">
+                        <div class="timeline-step completed">
+                            <div class="step-circle"><i class="fas fa-check"></i></div>
+                            <div class="step-title">Đặt Hàng</div>
+                        </div>
+                        <div class="timeline-step completed">
+                            <div class="step-circle"><i class="fas fa-check"></i></div>
+                            <div class="step-title">Chờ Xử Lý</div>
+                        </div>
+                        <div class="timeline-step <?php echo ($status === 'Hoàn trả') ? 'active' : 'completed'; ?>">
+                            <div class="step-circle" style="<?php echo ($status === 'Hoàn trả') ? 'background: #f97316; border-color: #ea580c; color: white;' : 'background: #ea580c; border-color: #ea580c; color: white;'; ?>">
+                                <i class="fas <?php echo ($status === 'Hoàn trả') ? 'fa-sync-alt fa-spin' : 'fa-check'; ?>"></i>
+                            </div>
+                            <div class="step-title" style="color: #ea580c; font-weight: 700;">Yêu Cầu Hoàn Trả</div>
+                        </div>
+                        <div class="timeline-step <?php echo ($status === 'Đã hoàn trả') ? 'completed' : ''; ?>">
+                            <div class="step-circle" style="<?php echo ($status === 'Đã hoàn trả') ? 'background: #059669; border-color: #059669; color: white;' : ''; ?>">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="step-title" style="<?php echo ($status === 'Đã hoàn trả') ? 'color: #059669; font-weight: 700;' : ''; ?>">Đã Hoàn Trả</div>
+                        </div>
                     </div>
-                    <div class="timeline-step">
-                        <div class="step-circle"><i class="fas fa-shipping-fast"></i></div>
-                        <div class="step-title">Đang Vận Chuyển</div>
+                <?php else: ?>
+                    <!-- LUỒNG GIAO HÀNG CHUẨN ĐỘNG -->
+                    <?php
+                    $isPendingDone = ($status === 'Đang giao' || $status === 'Đã giao');
+                    $isPendingActive = ($status === 'Chờ xử lý' || $status === 'Chờ thanh toán');
+                    $isShippingDone = ($status === 'Đã giao');
+                    $isShippingActive = ($status === 'Đang giao');
+                    $isDeliveredDone = ($status === 'Đã giao');
+                    ?>
+                    <div class="order-timeline mt-4">
+                        <div class="timeline-step completed">
+                            <div class="step-circle"><i class="fas fa-check"></i></div>
+                            <div class="step-title">Đặt Hàng</div>
+                        </div>
+                        <div class="timeline-step <?php echo $isPendingDone ? 'completed' : ($isPendingActive ? 'active' : ''); ?>">
+                            <div class="step-circle"><i class="fas <?php echo $isPendingDone ? 'fa-check' : 'fa-box'; ?>"></i></div>
+                            <div class="step-title">Chờ Xử Lý</div>
+                        </div>
+                        <div class="timeline-step <?php echo $isShippingDone ? 'completed' : ($isShippingActive ? 'active' : ''); ?>">
+                            <div class="step-circle"><i class="fas <?php echo $isShippingDone ? 'fa-check' : 'fa-shipping-fast'; ?>"></i></div>
+                            <div class="step-title">Đang Giao Hàng</div>
+                        </div>
+                        <div class="timeline-step <?php echo $isDeliveredDone ? 'completed' : ''; ?>">
+                            <div class="step-circle"><i class="fas fa-home"></i></div>
+                            <div class="step-title">Giao Thành Công</div>
+                        </div>
                     </div>
-                    <div class="timeline-step">
-                        <div class="step-circle"><i class="fas fa-home"></i></div>
-                        <div class="step-title">Giao Thành Công</div>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
 
             <div class="row g-4">
@@ -331,11 +398,47 @@ if ($orderId > 0) {
                                 <?php if ($isPayOS): ?>
                                     <span class="badge bg-primary px-3 py-1 rounded-pill">💳 Cổng Thanh Toán PayOS (VietQR)</span>
                                 <?php else: ?>
-                                    <span class="badge bg-secondary px-3 py-1 rounded-pill">💵 Tiền mặt khi nhận hàng (COD)</span>
+                                    <span class="badge bg-secondary px-3 py-1 rounded-pill">💵 Tiền mặt khi nhận hàng (COS)</span>
+                                    <?php if (!empty($order['collected_amount']) && (float)$order['collected_amount'] > 0): ?>
+                                        <div class="mt-1 small text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Đã thu tiền mặt: <?php echo number_format($order['collected_amount'], 0, ',', '.'); ?>₫</div>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </p>
                         </div>
                     </div>
+
+                    <!-- Khối Thông Tin Hoàn Trả (Nếu đơn hàng trong luồng Hoàn trả) -->
+                    <?php if ($isRefundFlow): ?>
+                        <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: #fff7ed; border: 1px solid #fdba74 !important;">
+                            <div class="card-header bg-transparent py-3 border-light">
+                                <span class="fw-bold" style="color: #c2410c;"><i class="fas fa-sync-alt me-2"></i>Thông Tin Xử Lý Hoàn Trả</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="mb-2"><strong>Trạng thái:</strong> <span class="badge <?php echo ($status === 'Đã hoàn trả') ? 'bg-success' : 'bg-warning text-dark'; ?> px-3 py-1 rounded-pill"><?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></span></div>
+                                <?php if (!empty($order['refund_amount']) && (float)$order['refund_amount'] > 0): ?>
+                                    <div class="mb-2"><strong>Số tiền hoàn trả:</strong> <span class="text-danger fw-bold fs-5"><?php echo number_format($order['refund_amount'], 0, ',', '.'); ?>₫</span></div>
+                                <?php endif; ?>
+                                <?php if (!empty($order['refund_note'])): ?>
+                                    <div class="mb-2"><strong>Lý do / Ghi chú:</strong> <span class="text-muted fst-italic"><?php echo htmlspecialchars($order['refund_note'], ENT_QUOTES, 'UTF-8'); ?></span></div>
+                                <?php endif; ?>
+                                <?php if (!empty($order['refunded_at'])): ?>
+                                    <div class="mb-2 small text-muted"><strong>Thời gian hoàn tất:</strong> <?php echo date('d/m/Y H:i:s', strtotime($order['refunded_at'])); ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($order['refund_proof_image'])): ?>
+                                    <div class="mt-3">
+                                        <label class="form-label fw-bold small text-dark d-block">Minh chứng hoàn tiền từ Zyro:</label>
+                                        <a href="/Zyro/uploads/refunds/<?php echo htmlspecialchars($order['refund_proof_image'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank">
+                                            <img src="/Zyro/uploads/refunds/<?php echo htmlspecialchars($order['refund_proof_image'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                                 alt="Minh chứng hoàn tiền" 
+                                                 class="img-fluid rounded border shadow-sm" 
+                                                 style="max-height: 180px; object-fit: contain;">
+                                        </a>
+                                        <div class="small text-muted mt-1 fst-italic">Bấm vào ảnh để xem kích thước lớn</div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
                     <!-- Khối Chi Tiết Giao Dịch PayOS -->
                     <?php if ($isPayOS): ?>
@@ -403,6 +506,7 @@ if ($orderId > 0) {
             </div>
         <?php endif; ?>
     </div>
+    </main>
 
     <!-- Footer dùng chung -->
     <?php include ('../includes/footer.php'); ?>

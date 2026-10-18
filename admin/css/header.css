@@ -1,58 +1,76 @@
-header
-{
+/* ==================================================================== */
+/* ZYRO ADMIN TOP HEADER STYLESHEET                                     */
+/* ==================================================================== */
+
+header {
     width: 100%;
-    background-color: rgb(246, 246, 246);
-    border-top: 1px solid #dee2e6;
-    border-bottom: 1px solid #dee2e6;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.menu-main
-{
+.menu-main {
     width: 100%;
-    height: 100%;
+    min-height: 60px;
     display: flex;
-}
-
-.menu-left
-{
-    width: 50%;
-    display: flex;
-    list-style: none;
-    gap: 35px;
+    justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
-.menu-left a
-{
-    text-decoration: none;
-    color: black;
-}
-
-.menu-right
-{
-    width: 50%;
-    height: 100%;
-    text-align: right;
+.menu-left {
+    display: flex;
     list-style: none;
-    padding: 0px 50px;
+    gap: 16px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
-.bi-person
-{
-    color: black;
-    font-size: 20px;
+.menu-left a {
+    text-decoration: none;
+    color: #475569;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: color 0.2s;
 }
 
-#btn-sidebar
-{
+.menu-left a:hover {
+    color: #0f172a;
+}
+
+.menu-right {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+#btn-sidebar {
     border: none;
-    background-color: rgb(246, 246, 246);
-    transition: 1s ease-in-out;
+    background: #f1f5f9;
+    color: #0f172a;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
 }
 
-#btn-sidebar:active
-{
-    transform: rotate(90deg);
-    background-color: #dee2e6;
+#btn-sidebar:hover {
+    background: #e2e8f0;
 }
 
+#btn-sidebar:active {
+    transform: scale(0.95);
+}

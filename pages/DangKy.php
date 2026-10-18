@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Check điều khoản -->
             <div class="box-input sub-form d-flex align-items-center gap-2 mb-2" style="height: auto;">
                 <input type="checkbox" name="txtDieuKhoang" id="txtDieuKhoang" checked required> 
-                <span class="text-checkbox small">Tôi đồng ý với <a href="#" class="text-dark"><u>Chính sách bảo mật</u></a> và <a href="#" class="text-dark"><u>Điều khoản ZYRO</u></a></span>
+                <span class="text-checkbox small">Tôi đồng ý với Chính sách bảo mật và Điều khoản mua hàng tại ZYRO</span>
             </div>
 
             <!-- Nút đăng ký -->

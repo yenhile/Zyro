@@ -15,10 +15,42 @@ $totalProductCount = count($allProducts);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Trị — ZYRO Admin</title>
-    <link rel="stylesheet" href="/Zyro/admin/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/index.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css">
+    <link rel="stylesheet" href="/Zyro/admin/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/index.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css?v=<?php echo time(); ?>">
     <style>
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .app-wrapper {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+        #sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+            height: 100vh !important;
+            z-index: 1050 !important;
+        }
+        #container {
+            margin-left: 250px !important;
+            width: calc(100% - 250px) !important;
+            max-width: calc(100% - 250px) !important;
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
         .dashboard-welcome {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #ffffff;
@@ -208,7 +240,7 @@ $totalProductCount = count($allProducts);
         <div id="container">
             <?php include('includes/header.php'); ?>
 
-            <div style="padding: 24px;">
+            <div class="admin-content-box">
                 <!-- Banner chào mừng -->
                 <div class="dashboard-welcome">
                     <div>
@@ -259,13 +291,13 @@ $totalProductCount = count($allProducts);
 
                     <a href="/Zyro/admin/pages/ThongKeDonHang.php" class="stat-card success">
                         <div class="stat-header">
-                            <span style="color: #15803d;">Doanh Thu Đã Thu</span>
+                            <span style="color: #15803d;">Doanh Thu Thực Thu</span>
                             <span>💰</span>
                         </div>
                         <div class="stat-value" style="color: #15803d; font-size: 24px;">
                             <?php echo number_format($orderStats['delivered_revenue']); ?>đ
                         </div>
-                        <div class="stat-subtext"><?php echo (int)$orderStats['dagiao']; ?> đơn giao thành công (Xem chi tiết →)</div>
+                        <div class="stat-subtext">Tiền mặt đã thu & Banking đã TT (Xem chi tiết →)</div>
                     </a>
 
                     <a href="/Zyro/admin/pages/QuanLySanPham.php" class="stat-card purple">
@@ -294,48 +326,50 @@ $totalProductCount = count($allProducts);
                             Chưa có đơn hàng nào trong hệ thống.
                         </div>
                     <?php else: ?>
-                        <table class="table-mini">
-                            <thead>
-                                <tr>
-                                    <th>MÃ ĐƠN</th>
-                                    <th>NGƯỜI NHẬN</th>
-                                    <th>SỐ ĐIỆN THOẠI</th>
-                                    <th>TỔNG TIỀN</th>
-                                    <th>NGÀY ĐẶT</th>
-                                    <th>TRẠNG THÁI</th>
-                                    <th style="text-align: right;">THAO TÁC</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($recentOrders as $ro): 
-                                    $roId = (int)$ro['orders_id'];
-                                    $st = trim($ro['status']);
-                                    $badge = 'badge-pending';
-                                    if ($st === 'Đang giao' || stripos($st, 'đang') !== false) {
-                                        $badge = 'badge-shipping';
-                                    } elseif ($st === 'Đã giao' || stripos($st, 'đã') !== false) {
-                                        $badge = 'badge-delivered';
-                                    } elseif ($st === 'Đã hủy' || stripos($st, 'hủy') !== false) {
-                                        $badge = 'badge-cancelled';
-                                    }
-                                ?>
+                        <div class="admin-table-responsive">
+                            <table class="table-mini">
+                                <thead>
                                     <tr>
-                                        <td><strong>#ZYRO-DH<?php echo str_pad($roId, 2, '0', STR_PAD_LEFT); ?></strong></td>
-                                        <td><strong><?php echo htmlspecialchars($ro['receiver_name'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
-                                        <td><?php echo htmlspecialchars($ro['receiver_phone'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                        <td style="color: #dc2626; font-weight: 700;"><?php echo number_format($ro['total_price']); ?>đ</td>
-                                        <td style="color: #64748b;"><?php echo date('d/m/Y H:i', strtotime($ro['order_date'])); ?></td>
-                                        <td><span class="badge-status-sm <?php echo $badge; ?>"><?php echo htmlspecialchars($st, ENT_QUOTES, 'UTF-8'); ?></span></td>
-                                        <td style="text-align: right;">
-                                            <a href="/Zyro/admin/pages/QuanLyDonHang.php?search=<?php echo $roId; ?>" 
-                                               style="background: #0f172a; color: #ffffff; padding: 5px 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">
-                                                Xử lý →
-                                            </a>
-                                        </td>
+                                        <th>MÃ ĐƠN</th>
+                                        <th>NGƯỜI NHẬN</th>
+                                        <th>SỐ ĐIỆN THOẠI</th>
+                                        <th>TỔNG TIỀN</th>
+                                        <th>NGÀY ĐẶT</th>
+                                        <th>TRẠNG THÁI</th>
+                                        <th style="text-align: right;">THAO TÁC</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($recentOrders as $ro): 
+                                        $roId = (int)$ro['orders_id'];
+                                        $st = trim($ro['status']);
+                                        $badge = 'badge-pending';
+                                        if ($st === 'Đang giao' || stripos($st, 'đang') !== false) {
+                                            $badge = 'badge-shipping';
+                                        } elseif ($st === 'Đã giao' || stripos($st, 'đã') !== false) {
+                                            $badge = 'badge-delivered';
+                                        } elseif ($st === 'Đã hủy' || stripos($st, 'hủy') !== false) {
+                                            $badge = 'badge-cancelled';
+                                        }
+                                    ?>
+                                        <tr>
+                                            <td><strong>#ZYRO-DH<?php echo str_pad($roId, 2, '0', STR_PAD_LEFT); ?></strong></td>
+                                            <td><strong><?php echo htmlspecialchars($ro['receiver_name'], ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                                            <td><?php echo htmlspecialchars($ro['receiver_phone'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td style="color: #dc2626; font-weight: 700;"><?php echo number_format($ro['total_price']); ?>đ</td>
+                                            <td style="color: #64748b;"><?php echo date('d/m/Y H:i', strtotime($ro['order_date'])); ?></td>
+                                            <td><span class="badge-status-sm <?php echo $badge; ?>"><?php echo htmlspecialchars($st, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                            <td style="text-align: right;">
+                                                <a href="/Zyro/admin/pages/QuanLyDonHang.php?search=<?php echo $roId; ?>" 
+                                                   style="background: #0f172a; color: #ffffff; padding: 5px 10px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">
+                                                    Xử lý →
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>

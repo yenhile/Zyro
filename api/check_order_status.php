@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=UTF-8');
 
-require_once('../class/classDatabase.php');
-require_once('../class/classProduct.php');
+require_once(__DIR__ . '/../class/classDatabase.php');
+require_once(__DIR__ . '/../class/classProduct.php');
 
 if (!function_exists('http_response_code')) {
     function http_response_code($code = NULL) {
@@ -44,7 +44,7 @@ if (!$order) {
 }
 
 $status = trim($order['status']);
-$isPaid = ($status === 'Đã thanh toán' || stripos($status, 'đã thanh toán') !== false || $status === 'Đã giao' || $status === 'Đang giao');
+$isPaid = (!empty($order['paid_at']) || !empty($order['payos_transaction_id']) || $status === 'Đã thanh toán' || stripos($status, 'đã thanh toán') !== false || $status === 'Đã giao' || $status === 'Đang giao' || ($status === 'Chờ xử lý' && !empty($order['paid_at'])));
 
 echo json_encode(array(
     'success' => true,

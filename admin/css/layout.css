@@ -1,28 +1,121 @@
-body
-{
-    margin: 0px auto;
+/* ==================================================================== */
+/* ZYRO ADMIN CORE LAYOUT SYSTEM (RESPONSIVE & NO OVERFLOW)            */
+/* ==================================================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box !important;
 }
 
-.app-wrapper
-{
-    display: flex;
-    width: 100%;
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important; /* TUYỆT ĐỐI KHÔNG CÓ THANH CUỘN NGANG WEBSITE */
+    background-color: #f8fafc;
 }
 
-#sidebar
-{
-    width: 15%;
-    transition: 0.4s ease-in-out;
-    box-shadow: 4px 0px 10px #bbc7d3;
-    z-index: 1;
+.app-wrapper {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100vh;
+    overflow-x: hidden !important;
+    position: relative;
 }
 
+/* Sidebar - Cố định 250px, tuyệt đối KHÔNG bao giờ bị cuộn theo trang hay bị co ép */
+#sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    flex: 0 0 250px !important;
+    flex-shrink: 0 !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    box-shadow: 3px 0 16px rgba(0, 0, 0, 0.15) !important;
+    z-index: 1050 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    transition: transform 0.3s ease !important;
+    box-sizing: border-box !important;
+}
+
+/* Khi thu gọn sidebar */
 #sidebar.collapsed {
-    width: 0%;
-    z-index: -1;
+    transform: translateX(-100%) !important;
+    visibility: hidden !important;
+    width: 0px !important;
+    min-width: 0px !important;
+    max-width: 0px !important;
 }
 
-#container
-{
-    width: 100%;
+/* Container chính - Chiếm trọn phần còn lại và không bao giờ vượt quá độ rộng màn hình */
+#container {
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100% - 250px) !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important; /* Cực kỳ quan trọng: ngăn flex item tràn chiều ngang */
+    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden !important; /* TRIỆT TIÊU TOÀN BỘ THANH CUỘN NGANG */
+    box-sizing: border-box !important;
+    transition: margin-left 0.3s ease, width 0.3s ease !important;
+}
+
+#sidebar.collapsed ~ #container {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Nội dung trang bên trong container */
+.admin-content-box,
+.admin-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 24px;
+    flex: 1 0 auto;
+    overflow-x: hidden !important;
+}
+
+/* Responsive khi thu nhỏ màn hình */
+@media (max-width: 992px) {
+    #sidebar {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1100;
+        transform: translateX(0);
+    }
+
+    #sidebar.collapsed {
+        transform: translateX(-100%);
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+        flex: 0 0 250px !important;
+    }
+
+    #container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .admin-content-box,
+    .admin-main-content {
+        padding: 16px;
+    }
 }

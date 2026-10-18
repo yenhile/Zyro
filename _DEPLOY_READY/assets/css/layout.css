@@ -1,0 +1,81 @@
+html, body
+{
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body
+{
+	min-width: 800px;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*
+{
+	box-sizing: border-box;
+}
+
+.page-content-wrapper
+{
+	flex: 1 0 auto;
+	width: 100%;
+}
+
+#menu-top
+{
+	width: 100%;
+	background-color: #F6F6F6;
+	display: flex;
+	padding: 4px 48px;
+	flex-shrink: 0;
+}
+
+#left-menu-top
+{
+	width: 50%;
+	height: 100%;
+}
+
+#right-menu-top
+{
+	min-width: 50%;
+	height: 100%;
+}
+
+#menu-main
+{
+	width: 100%;
+	background-color: #FFFFFF;
+	padding: 9px 0px;
+	flex-shrink: 0;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+/* Footer thu nhỏ tối đa & Sticky Flexbox (Triệt tiêu khoảng trống 100%) */
+footer, .zyro-footer
+{
+	width: 100% !important;
+	height: auto !important;
+	min-height: unset !important;
+	background-color: #f8f9fa !important;
+	border-top: 1px solid #e5e7eb !important;
+	padding: 10px 0px !important;
+	margin-top: auto !important;
+	margin-bottom: 0px !important;
+	flex-shrink: 0;
+	text-align: center;
+}
+
+.zyro-copyright
+{
+	margin: 0 !important;
+	padding: 0 !important;
+	color: #6b7280 !important;
+	font-size: 13px !important;
+	font-weight: 500;
+	line-height: 1.5;
+}

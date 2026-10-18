@@ -38,7 +38,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
 
-$products = $productModel->lay_danh_sach_tat_ca_san_pham();
+// Tiếp nhận tham số phân trang & tìm kiếm
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$perPage = isset($_GET['limit']) && in_array((int)$_GET['limit'], array(5, 10, 20, 50, 100)) ? (int)$_GET['limit'] : 10;
+
+$totalItems = $productModel->dem_tong_so_san_pham($search);
+$totalPages = max(1, (int)ceil($totalItems / $perPage));
+if ($currentPage > $totalPages) $currentPage = $totalPages;
+$offset = ($currentPage - 1) * $perPage;
+
+$products = $productModel->lay_danh_sach_san_pham_phan_trang($perPage, $offset, $search);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -47,10 +57,42 @@ $products = $productModel->lay_danh_sach_tat_ca_san_pham();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Sản Phẩm — ZYRO Admin</title>
-    <link rel="stylesheet" href="/Zyro/admin/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/index.css">
-    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css">
+    <link rel="stylesheet" href="/Zyro/admin/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/index.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/admin/css/admin-style.css?v=<?php echo time(); ?>">
     <style>
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .app-wrapper {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+        #sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 250px !important;
+            min-width: 250px !important;
+            max-width: 250px !important;
+            height: 100vh !important;
+            z-index: 1050 !important;
+        }
+        #container {
+            margin-left: 250px !important;
+            width: calc(100% - 250px) !important;
+            max-width: calc(100% - 250px) !important;
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
         .btn-edit-sm {
             display: inline-flex;
             align-items: center;
@@ -337,7 +379,8 @@ $products = $productModel->lay_danh_sach_tat_ca_san_pham();
 
                 <div class="admin-card">
                     <div class="admin-card-body" style="padding: 0;">
-                        <table class="admin-table">
+                        <div class="admin-table-responsive">
+                            <table class="admin-table">
                             <thead>
                                 <tr>
                                     <th style="width: 55px;">ID</th>
@@ -405,6 +448,8 @@ $products = $productModel->lay_danh_sach_tat_ca_san_pham();
                                 <?php endif; ?>
                             </tbody>
                         </table>
+                        </div>
+                        <?php include('../includes/pagination.php'); ?>
                     </div>
                 </div>
             </div>

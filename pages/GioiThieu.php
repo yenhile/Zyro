@@ -24,9 +24,9 @@ $latestArticles = $productModel->lay_danh_sach_bai_viet(6);
     <title><?php echo $pageTitle; ?></title>
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="/Zyro/assets/css/bootstrap.css">
-    <!-- Style chính -->
-    <link rel="stylesheet" href="/Zyro/assets/css/layout.css">
-    <link rel="stylesheet" href="/Zyro/assets/css/style.css">
+    <!-- Style chính có cache-busting -->
+    <link rel="stylesheet" href="/Zyro/assets/css/layout.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/Zyro/assets/css/style.css?v=<?php echo time(); ?>">
     <script src="/Zyro/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/Zyro/assets/js/action.js"></script>
 </head>
@@ -34,6 +34,7 @@ $latestArticles = $productModel->lay_danh_sach_bai_viet(6);
     <!-- Header dùng chung -->
     <?php include ('../includes/header.php'); ?>
 
+    <main class="page-content-wrapper">
     <div class="container my-4">
         <?php if ($articleDetail): 
             $title = htmlspecialchars($articleDetail['title'], ENT_QUOTES, 'UTF-8');
@@ -196,6 +197,7 @@ $latestArticles = $productModel->lay_danh_sach_bai_viet(6);
 
         <?php endif; ?>
     </div>
+    </main>
 
     <!-- Footer dùng chung -->
     <?php include ('../includes/footer.php'); ?>

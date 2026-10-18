@@ -120,13 +120,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="lb-input">Mật khẩu</span>
             </div>
 
-            <!-- Nhớ mật khẩu & Quên mật khẩu -->
+            <!-- Nhớ mật khẩu -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <label class="d-flex align-items-center gap-2 small text-muted" style="cursor: pointer;">
                     <input type="checkbox" name="txtNhoMatKhau" id="txtNhoMatKhau"> 
-                    <span>Nhớ mật khẩu</span>
+                    <span>Nhớ mật khẩu đăng nhập</span>
                 </label>
-                <a href="#" class="small text-muted text-decoration-none">Quên mật khẩu?</a>
             </div>
 
             <!-- Nút đăng nhập -->
